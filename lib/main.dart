@@ -1,6 +1,9 @@
 import 'package:cambio_veraz/providers/auth_provider.dart';
 import 'package:cambio_veraz/providers/pages_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/ui/layouts/app/pages_layout.dart';
+import 'package:cambio_veraz/ui/layouts/auth/auth_layout.dart';
+import 'package:cambio_veraz/ui/layouts/splash/splash_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,13 +43,13 @@ class MyApp extends StatelessWidget {
         final authProvider = context.watch<AuthProvider>();
 
         if (authProvider.authStatus == AuthStatus.checking) {
-          return Container(); // loading
+          return const SplashLayout(); // loading
         }
 
         if (authProvider.authStatus == AuthStatus.authenticated) {
-          return Container(child: child!); // home
+          return PagesLayout(child: child!); // home
         } else {
-          return Container(child: child!); // auth
+          return AuthLayout(child: child!); // auth
         }
       },
       theme: ThemeData.light().copyWith(
