@@ -14,6 +14,7 @@ dependencies:
   firebase_auth: ^4.6.2
   firebase_core: ^2.13.1
   firebase_storage: ^11.2.4
+  fluro: ^2.0.5
   flutter:
     sdk: flutter
   intl: ^0.18.1
