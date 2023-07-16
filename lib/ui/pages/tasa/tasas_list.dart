@@ -1,5 +1,6 @@
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/providers/tasas_provider.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/pages/moneda/monedas_list.dart';
 import 'package:cambio_veraz/ui/pages/tasa/widgets/tasa_tile.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,10 @@ class TasasListPage extends StatefulWidget {
 
 class _TasasListPageState extends State<TasasListPage> {
   final TextEditingController buscadorController = TextEditingController();
+
+  navigateTo(String route) {
+    NavigationService.navigateTo(route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,7 @@ class _TasasListPageState extends State<TasasListPage> {
               ),
               IconButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed(MonedasListPage.route);
+                    navigateTo(MonedasListPage.route);
                   },
                   icon: const Icon(
                     Icons.payments_rounded,

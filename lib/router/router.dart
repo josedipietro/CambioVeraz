@@ -9,10 +9,16 @@ class Flurorouter {
 
   // Auth Router
   static String loginRoute = '/auth/login';
-  static String registerRoute = '/auth/register';
 
   // Pages
   static String dashboardRoute = '/dashboard';
+  static String clientesRoute = '/clientes';
+  static String cuentasRoute = '/cuentas';
+  static String tasasRoute = '/tasas';
+  static String operacionesRoute = '/operaciones';
+  static String rolesRoute = '/roles';
+  static String monedasRoute = '/monedas';
+  static String usuariosRoute = '/usuarios';
 
   static void configureRoutes() {
     // Auth Routes
@@ -25,6 +31,22 @@ class Flurorouter {
     router.define(dashboardRoute,
         handler: PagesHandlers.dashboard,
         transitionType: TransitionType.fadeIn);
+
+    router.define(clientesRoute,
+        handler: PagesHandlers.clientes, transitionType: TransitionType.fadeIn);
+
+    router.define(cuentasRoute,
+        handler: PagesHandlers.cuentas, transitionType: TransitionType.fadeIn);
+
+    router.define(tasasRoute,
+        handler: PagesHandlers.tasas, transitionType: TransitionType.fadeIn);
+
+    router.define(operacionesRoute,
+        handler: PagesHandlers.operaciones,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(monedasRoute,
+        handler: PagesHandlers.monedas, transitionType: TransitionType.fadeIn);
 
     // 404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;
