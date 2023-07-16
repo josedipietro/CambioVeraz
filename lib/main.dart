@@ -1,6 +1,8 @@
 import 'package:cambio_veraz/providers/auth_provider.dart';
 import 'package:cambio_veraz/providers/pages_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/layouts/app/pages_layout.dart';
 import 'package:cambio_veraz/ui/layouts/auth/auth_layout.dart';
 import 'package:cambio_veraz/ui/layouts/splash/splash_layout.dart';
@@ -37,8 +39,8 @@ class MyApp extends StatelessWidget {
       title: 'Elohim',
       initialRoute: '/',
       onGenerateRoute: Flurorouter.router.generator,
-      // navigatorKey: NavigationService.navigatorKey,
-      // scaffoldMessengerKey: NotificationsService.messengerKey,
+      navigatorKey: NavigationService.navigatorKey,
+      scaffoldMessengerKey: NotificationsService.messengerKey,
       builder: (context, child) {
         final authProvider = context.watch<AuthProvider>();
 
