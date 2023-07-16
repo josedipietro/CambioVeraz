@@ -90,4 +90,26 @@ class PagesHandlers {
       return const LoginPage();
     }
   });
+
+  static Handler usuarios = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.usuariosRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return Container();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler roles = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.rolesRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return Container();
+    } else {
+      return const LoginPage();
+    }
+  });
 }

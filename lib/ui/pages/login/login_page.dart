@@ -50,7 +50,7 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(
                       height: 8,
                     ),
-                    TextFormField(
+                    TextField(
                       controller: passwordController,
                       obscureText: true,
                       decoration: const InputDecoration(

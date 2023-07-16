@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OperacionesListPage extends StatefulWidget {
-  static String route = '/operacions';
+  static String route = '/operaciones';
 
   const OperacionesListPage({super.key});
 

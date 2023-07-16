@@ -1,3 +1,4 @@
+import 'package:cambio_veraz/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 
 class AuthLayout extends StatelessWidget {
@@ -10,7 +11,7 @@ class AuthLayout extends StatelessWidget {
     return Scaffold(
         body: ListView(
       physics: const ClampingScrollPhysics(),
-      children: [child],
+      children: const [LoginPage()],
     ));
   }
 }

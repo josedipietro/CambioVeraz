@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TasasListPage extends StatefulWidget {
-  static String route = '/operaciones/tasas';
+  static String route = '/tasas';
 
   const TasasListPage({super.key});
 

@@ -5,20 +5,27 @@ import 'package:fluro/fluro.dart';
 class Flurorouter {
   static final FluroRouter router = FluroRouter();
 
-  static String rootRoute = '/';
+  static const String rootRoute = '/';
 
   // Auth Router
-  static String loginRoute = '/auth/login';
+  static const String loginRoute = '/auth/login';
 
   // Pages
-  static String dashboardRoute = '/dashboard';
-  static String clientesRoute = '/clientes';
-  static String cuentasRoute = '/cuentas';
-  static String tasasRoute = '/tasas';
-  static String operacionesRoute = '/operaciones';
-  static String rolesRoute = '/roles';
-  static String monedasRoute = '/monedas';
-  static String usuariosRoute = '/usuarios';
+  static const String dashboardRoute = '/dashboard';
+  static const String clientesRoute = '/clientes';
+  static const String agregarClienteRoute = '/clientes/agregar';
+  static const String cuentasRoute = '/cuentas';
+  static const String agregarCuentaRoute = '/cuentas/agregar';
+  static const String tasasRoute = '/tasas';
+  static const String agregarTasaRoute = '/tasas/agregar';
+  static const String operacionesRoute = '/operaciones';
+  static const String agregarOperacioneRoute = '/operaciones/agregar';
+  static const String rolesRoute = '/roles';
+  static const String agregarRolRoute = '/roles/agregar';
+  static const String monedasRoute = '/monedas';
+  static const String agregarMonedaRoute = '/monedas/agregar';
+  static const String usuariosRoute = '/usuarios';
+  static const String agregarUsuarioRoute = '/usuarios/agregar';
 
   static void configureRoutes() {
     // Auth Routes
@@ -47,6 +54,12 @@ class Flurorouter {
 
     router.define(monedasRoute,
         handler: PagesHandlers.monedas, transitionType: TransitionType.fadeIn);
+
+    router.define(usuariosRoute,
+        handler: PagesHandlers.usuarios, transitionType: TransitionType.fadeIn);
+
+    router.define(rolesRoute,
+        handler: PagesHandlers.roles, transitionType: TransitionType.fadeIn);
 
     // 404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;

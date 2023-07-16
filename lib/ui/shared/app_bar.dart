@@ -1,22 +1,12 @@
-import 'package:cambio_veraz/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class CustomAppBar extends AppBar {
-  CustomAppBar({super.key});
+  CustomAppBar({super.key, required this.onSignOut});
+
+  final Function() onSignOut;
 
   @override
-  Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-
-    Widget signOutButton() {
-      return IconButton(
-          onPressed: () => auth.signOut(),
-          icon: const Icon(Icons.exit_to_app_rounded));
-    }
-
-    return AppBar(
-      title: Row(
+  Widget? get title => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
@@ -27,9 +17,17 @@ class CustomAppBar extends AppBar {
           const Text('Cambio Veraz',
               style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
         ],
-      ),
-      centerTitle: true,
-      actions: [signOutButton()],
-    );
+      );
+
+  @override
+  bool? get centerTitle => true;
+
+  @override
+  // TODO: implement actions
+  List<Widget>? get actions => [signOutButton()];
+
+  Widget signOutButton() {
+    return IconButton(
+        onPressed: onSignOut, icon: const Icon(Icons.exit_to_app_rounded));
   }
 }
