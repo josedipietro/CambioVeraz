@@ -33,6 +33,7 @@ class Flurorouter {
     // Auth Routes
     router.define(rootRoute,
         handler: PagesHandlers.login, transitionType: TransitionType.none);
+
     router.define(loginRoute,
         handler: PagesHandlers.login, transitionType: TransitionType.none);
 
@@ -62,6 +63,42 @@ class Flurorouter {
 
     router.define(rolesRoute,
         handler: PagesHandlers.roles, transitionType: TransitionType.fadeIn);
+
+    router.define(depositosRoute,
+        handler: PagesHandlers.depositos,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarClienteRoute,
+        handler: PagesHandlers.agregarCliente,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarCuentaRoute,
+        handler: PagesHandlers.agregarCuenta,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarTasaRoute,
+        handler: PagesHandlers.agregarTasa,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarOperacionRoute,
+        handler: PagesHandlers.agregarOperacion,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarMonedaRoute,
+        handler: PagesHandlers.agregarMoneda,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarUsuarioRoute,
+        handler: PagesHandlers.agregarUsuario,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarRolRoute,
+        handler: PagesHandlers.agregarRol,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(agregarDepositoRoute,
+        handler: PagesHandlers.agregarDeposito,
+        transitionType: TransitionType.fadeIn);
 
     // 404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;

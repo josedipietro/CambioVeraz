@@ -1,22 +1,22 @@
-import 'package:cambio_veraz/models/tasa.dart';
-import 'package:cambio_veraz/providers/tasas_provider.dart';
+import 'package:cambio_veraz/models/arca.dart';
+import 'package:cambio_veraz/providers/depositos_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
-import 'package:cambio_veraz/ui/pages/tasa/widgets/tasa_tile.dart';
+import 'package:cambio_veraz/ui/pages/deposito/widget/deposito_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TasasListPage extends StatefulWidget {
-  static String route = '/tasas';
+class DepositosListPage extends StatefulWidget {
+  static String route = '/depositos';
 
-  const TasasListPage({super.key});
+  const DepositosListPage({super.key});
 
   @override
-  State<TasasListPage> createState() => _TasasListPageState();
+  State<DepositosListPage> createState() => _DepositosListPageState();
 }
 
-class _TasasListPageState extends State<TasasListPage> {
+class _DepositosListPageState extends State<DepositosListPage> {
   final TextEditingController buscadorController = TextEditingController();
 
   navigateTo(String route) {
@@ -25,42 +25,41 @@ class _TasasListPageState extends State<TasasListPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('tasas list');
-    final tasasProvider = context.watch<TasasProvider>();
+    print('depositos list');
+    final depositosProvider = context.watch<DepositosProvider>();
 
-    return buildBody(context, tasasProvider);
+    return buildBody(context, depositosProvider);
   }
 
-  buildBody(BuildContext context, TasasProvider tasasProvider) {
+  buildBody(BuildContext context, DepositosProvider depositosProvider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  onPressed: () => NavigationService.navigateTo(
+                      Flurorouter.operacionesRoute),
+                ),
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Tasas',
+                  'Depositos',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                 ),
-              ),
-              IconButton(
-                  onPressed: () {
-                    navigateTo(Flurorouter.monedasRoute);
-                  },
-                  icon: const Icon(
-                    Icons.payments_rounded,
-                    size: 32,
-                  ))
+              )
             ],
           ),
           buildBuscador(context),
-          !tasasProvider.loading
-              ? buildList(context, tasasProvider.tasas)
+          !depositosProvider.loading
+              ? buildList(context, depositosProvider.depositos)
               : const Center(child: CupertinoActivityIndicator()),
         ],
       ),
@@ -84,13 +83,13 @@ class _TasasListPageState extends State<TasasListPage> {
         ));
   }
 
-  buildList(BuildContext context, List<Tasa> tasas) {
+  buildList(BuildContext context, List<Deposito> depositos) {
     return Expanded(
         child: ListView.builder(
-      itemCount: tasas.length,
-      itemBuilder: (context, index) => TasaTile(
-        tasa: tasas[index],
-        onRemove: (moneda) {},
+      itemCount: depositos.length,
+      itemBuilder: (context, index) => DepositoTile(
+        deposito: depositos[index],
+        onRemove: (deposito) {},
       ),
     ));
   }

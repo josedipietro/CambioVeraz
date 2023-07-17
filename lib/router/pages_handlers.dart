@@ -5,6 +5,8 @@ import 'package:cambio_veraz/ui/pages/cliente/clientes_list.dart';
 import 'package:cambio_veraz/ui/pages/cliente/nuevo_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/cuentas_list.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/nueva_cuenta.dart';
+import 'package:cambio_veraz/ui/pages/deposito/depositos_list.dart';
+import 'package:cambio_veraz/ui/pages/deposito/nuevo_deposito.dart';
 import 'package:cambio_veraz/ui/pages/login/login_page.dart';
 import 'package:cambio_veraz/ui/pages/moneda/monedas_list.dart';
 import 'package:cambio_veraz/ui/pages/moneda/nueva_moneda.dart';
@@ -24,7 +26,7 @@ class PagesHandlers {
     if (authProvider.authStatus == AuthStatus.notAuthenticated) {
       return const LoginPage();
     } else {
-      return Container();
+      return Container(); // dashboard
     }
   });
 
@@ -172,7 +174,7 @@ class PagesHandlers {
     }
   });
 
-  static Handler aregarUsuario = Handler(handlerFunc: (context, params) {
+  static Handler agregarUsuario = Handler(handlerFunc: (context, params) {
     final authProvider = context!.watch<AuthProvider>();
     context
         .read<PagesProvider>()
@@ -204,6 +206,30 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return Container();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler depositos = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.depositosRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const DepositosListPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler agregarDeposito = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.agregarDepositoRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const NuevoDepositoPage();
     } else {
       return const LoginPage();
     }

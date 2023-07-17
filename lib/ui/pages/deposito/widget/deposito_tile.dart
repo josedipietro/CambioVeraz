@@ -1,14 +1,16 @@
-import 'package:cambio_veraz/models/tasa.dart';
+import 'package:cambio_veraz/models/arca.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class TasaTile extends StatelessWidget {
-  final Tasa tasa;
-  final void Function(Tasa) onRemove;
+class DepositoTile extends StatelessWidget {
+  final Deposito deposito;
+  final void Function(Deposito) onRemove;
+  final DateFormat format = DateFormat.yMd('es');
 
-  const TasaTile({
+  DepositoTile({
     super.key,
-    required this.tasa,
+    required this.deposito,
     required this.onRemove,
   });
 
@@ -24,12 +26,7 @@ class TasaTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildTitleAndDescription(),
-          Expanded(
-              child: tasa.tasaEntrante
-                  ? Text(
-                      '${tasa.monedaEntrante.simbolo}1 - ${tasa.monedaSaliente.simbolo}${tasa.tasa}')
-                  : Text(
-                      '${tasa.monedaSaliente.simbolo}1 - ${tasa.monedaEntrante.simbolo}${(1 / tasa.tasa).toStringAsFixed(2)}')),
+          _buildMontoYTasa(),
           _buildRemovableArea(context),
         ],
       ),
@@ -45,7 +42,7 @@ class TasaTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tasa.nombre,
+              deposito.toString(),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -55,7 +52,7 @@ class TasaTile extends StatelessWidget {
               ),
             ),
             Text(
-              '${tasa.monedaEntrante.toString()} - ${tasa.monedaSaliente.toString()}',
+              format.format(deposito.fecha),
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -64,6 +61,35 @@ class TasaTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildMontoYTasa() {
+    return Expanded(
+        child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            '${deposito.cuentaReceptora.moneda.simbolo}${deposito.monto}',
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            '${deposito.cuentaReceptora.moneda.simbolo}1 - \$${deposito.tasa}',
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          )
+        ],
+      ),
+    ));
   }
 
   Widget _buildRemovableArea(BuildContext context) {
@@ -81,7 +107,7 @@ class TasaTile extends StatelessWidget {
         message: '¿Deseas eliminar esta reservación?',
         title: 'Eliminar Reservación');
     if (confirm == true) {
-      onRemove(tasa);
+      onRemove(deposito);
     }
   }
 }

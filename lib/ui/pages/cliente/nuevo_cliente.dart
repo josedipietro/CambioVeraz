@@ -1,4 +1,6 @@
 import 'package:cambio_veraz/models/cliente.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -21,15 +23,27 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: buildBody(context),
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        return true;
+      },
+      child: Scaffold(
+        appBar: buildAppBar(),
+        body: buildBody(context),
+      ),
     );
   }
 
   AppBar buildAppBar() {
     return AppBar(
       title: const Text('Agregar Cliente'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        },
+      ),
     );
   }
 
@@ -138,7 +152,7 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
         content: const Text('Cuenta Agregada'),
       ));
 
-      return Navigator.of(context).pop();
+      return NavigationService.replaceTo(Flurorouter.clientesRoute);
     } catch (err) {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -6,6 +6,7 @@ class _Storage {
   Reference get fotosRef => imagenesRef.child('fotos');
   Reference get cedulasRef => imagenesRef.child('cedulas');
   Reference get operacionesRef => imagenesRef.child('operaciones');
+  Reference get arcasRef => imagenesRef.child('depositos');
 }
 
 final storage = _Storage();

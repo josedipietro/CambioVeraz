@@ -9,6 +9,7 @@ class Cuenta extends ModeloBase {
   String nombreTitular;
   int numeroCuenta;
   int numeroIdentificacion;
+  double comision;
 
   Cuenta(
       {String? id,
@@ -16,7 +17,8 @@ class Cuenta extends ModeloBase {
       required this.nombreTitular,
       required this.moneda,
       required this.numeroCuenta,
-      required this.numeroIdentificacion})
+      required this.numeroIdentificacion,
+      this.comision = 0})
       : super(id: id ?? database.cuentasRef.doc().id);
 
   @override
@@ -29,6 +31,7 @@ class Cuenta extends ModeloBase {
         nombre: snapshot.get('nombre'),
         nombreTitular: snapshot.get('nombreTitular'),
         moneda: moneda,
+        comision: snapshot.get('comision') ?? 0,
         numeroCuenta: snapshot.get('numeroCuenta'),
         numeroIdentificacion: snapshot.get('numeroIdentificacion'));
   }

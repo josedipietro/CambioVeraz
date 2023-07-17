@@ -1,5 +1,8 @@
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/firestore.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/widget/cuenta_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +34,24 @@ class _CuentasListPageState extends State<CuentasListPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text(
-              'Cuentas',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
-            ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                  onPressed: () =>
+                      NavigationService.navigateTo(Flurorouter.cuentasRoute),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Cuentas',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
           ),
           buildBuscador(context),
           !cuentasProvider.loading
@@ -68,10 +83,17 @@ class _CuentasListPageState extends State<CuentasListPage> {
     return Expanded(
         child: ListView.builder(
       itemCount: cuentas.length,
-      itemBuilder: (context, index) => CuentaTile(
-        cuenta: cuentas[index],
-        onRemove: (moneda) {},
-      ),
+      itemBuilder: (context, index) {
+        return FutureBuilder(
+            future: database.getBalanceCuenta(cuentas[index]),
+            initialData: 0.0,
+            builder: (context, snapshot) {
+              return CuentaTile(
+                  cuenta: cuentas[index],
+                  onRemove: (moneda) {},
+                  balance: snapshot.data ?? 0);
+            });
+      },
     ));
   }
 }

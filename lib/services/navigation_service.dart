@@ -10,4 +10,8 @@ class NavigationService {
   static replaceTo(String routeName) {
     return navigatorKey.currentState!.pushReplacementNamed(routeName);
   }
+
+  static pop() {
+    return navigatorKey.currentState!.pop();
+  }
 }

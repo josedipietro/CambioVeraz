@@ -1,12 +1,8 @@
-import 'package:cambio_veraz/models/cliente.dart';
+import 'package:cambio_veraz/models/arca.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
-import 'package:cambio_veraz/models/operacion.dart';
-import 'package:cambio_veraz/models/tasa.dart';
-import 'package:cambio_veraz/providers/clientes_provider.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
 import 'package:cambio_veraz/providers/monedas_provider.dart';
-import 'package:cambio_veraz/providers/tasas_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
@@ -14,40 +10,33 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:collection/collection.dart';
 
-class NuevaOperacionPage extends StatefulWidget {
-  static String route = '/operacions/nuevaOperacion';
-  const NuevaOperacionPage({super.key});
+class NuevoDepositoPage extends StatefulWidget {
+  static String route = '/depositos/nuevaDeposito';
+  const NuevoDepositoPage({super.key});
 
   @override
-  State<NuevaOperacionPage> createState() => _NuevaCientePageState();
+  State<NuevoDepositoPage> createState() => _NuevoCientePageState();
 }
 
-class _NuevaCientePageState extends State<NuevaOperacionPage> {
-  Cliente? clienteSelected;
-
+class _NuevoCientePageState extends State<NuevoDepositoPage> {
   Moneda? monedaEntranteSelected;
-  Moneda? monedaSalienteSelected;
-
-  Tasa? tasaSelected;
 
   Cuenta? cuentaEntranteSelected;
-  Cuenta? cuentaSalienteSelected;
 
   TextEditingController montoController = TextEditingController(text: '0');
+  TextEditingController tasaController = TextEditingController(text: '0');
 
   PlatformFile? comprobanteFile;
 
-  List<Tasa> tasas = [];
-
   double monto = 0;
+  double tasa = 0;
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        NavigationService.replaceTo(Flurorouter.depositosRoute);
         return true;
       },
       child: Scaffold(
@@ -59,21 +48,19 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Operacion'),
+      title: const Text('Agregar Deposito'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          NavigationService.replaceTo(Flurorouter.operacionesRoute);
+          NavigationService.replaceTo(Flurorouter.depositosRoute);
         },
       ),
     );
   }
 
   Widget buildBody(BuildContext context) {
-    final clientesProvider = context.watch<ClientesProvider>();
     final monedasProvider = context.watch<MonedasProvider>();
     final cuentasProvider = context.watch<CuentasProvider>();
-    tasas = context.watch<TasasProvider>().tasas;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -82,11 +69,6 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           Expanded(
             child: ListView(
               children: [
-                CustomDropdown<Cliente>(
-                    items: clientesProvider.clientes,
-                    value: clienteSelected,
-                    onChange: onClienteSelected,
-                    title: 'Cliente'),
                 CustomDropdown<Moneda>(
                     items: monedasProvider.monedas,
                     value: monedaEntranteSelected,
@@ -102,36 +84,34 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                       value: cuentaEntranteSelected,
                       onChange: onCuentaEntranteSelected,
                       title: 'Cuenta Entrante'),
-                if (monedaEntranteSelected != null)
-                  CustomDropdown<Moneda>(
-                      items: monedasProvider.monedas
-                          .where((element) =>
-                              element.nombreISO !=
-                              monedaEntranteSelected!.nombreISO)
-                          .toList(),
-                      value: monedaSalienteSelected,
-                      onChange: onMonedaSalienteSelected,
-                      title: 'Moneda Saliente'),
-                if (monedaSalienteSelected != null)
-                  CustomDropdown<Cuenta>(
-                      items: cuentasProvider.cuentas
-                          .where((element) =>
-                              element.moneda.nombreISO ==
-                              monedaSalienteSelected!.nombreISO)
-                          .toList(),
-                      value: cuentaSalienteSelected,
-                      onChange: onCuentaSalienteSelected,
-                      title: 'Cuenta Saliente'),
                 if (cuentaEntranteSelected != null)
                   buildField(context, 'Monto', montoController,
                       maxLength: 30,
                       type: TextInputType.number,
                       suffix: Text(cuentaEntranteSelected!.moneda.simbolo),
-                      onlyDigits: true),
+                      onlyDigits: true, onChange: (value) {
+                    if (value != '') {
+                      setState(() {
+                        monto = double.parse(value);
+                      });
+                    }
+                  }),
+                if (cuentaEntranteSelected != null)
+                  buildField(context, 'Tasa', tasaController,
+                      maxLength: 30,
+                      type: TextInputType.number,
+                      suffix: const Text('\$'),
+                      onlyDigits: true, onChange: (value) {
+                    if (value != '') {
+                      setState(() {
+                        tasa = double.parse(value);
+                      });
+                    }
+                  }),
                 buildUploadFileButton('Subir Comprobante', (file) {
                   comprobanteFile = file;
                 }),
-                if (tasaSelected != null) buildOperacionTasaPreview(),
+                if (tasa > 0) buildDepositoTasaPreview(),
               ],
             ),
           ),
@@ -140,8 +120,8 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
             width: double.infinity,
             height: 60,
             child: OutlinedButton(
-              onPressed: tasaSelected != null ? agregar : () {},
-              child: const Text('Agregar Operacion'),
+              onPressed: tasa > 0 ? agregar : () {},
+              child: const Text('Agregar Deposito'),
             ),
           ),
         ],
@@ -149,32 +129,11 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     );
   }
 
-  onClienteSelected(Cliente? cliente) {
-    setState(() {
-      clienteSelected = cliente;
-    });
-  }
-
   onMonedaEntranteSelected(Moneda? moneda) {
     setState(() {
       monedaEntranteSelected = moneda;
 
       cuentaEntranteSelected = null;
-      monedaSalienteSelected = null;
-      cuentaSalienteSelected = null;
-    });
-  }
-
-  onMonedaSalienteSelected(Moneda? moneda) {
-    print(tasas);
-    final tasa = tasas.firstWhereOrNull((element) =>
-        element.monedaEntrante.nombreISO == monedaEntranteSelected!.nombreISO &&
-        element.monedaSaliente.nombreISO == moneda!.nombreISO);
-    print(tasa);
-
-    setState(() {
-      monedaSalienteSelected = moneda;
-      tasaSelected = tasa;
     });
   }
 
@@ -184,32 +143,30 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     });
   }
 
-  onCuentaSalienteSelected(Cuenta? cuenta) {
-    setState(() {
-      cuentaSalienteSelected = cuenta;
-    });
-  }
-
-  Widget buildOperacionTasaPreview() {
+  Widget buildDepositoTasaPreview() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text('Tasa'),
         Text(
-            '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+            '${monedaEntranteSelected?.simbolo ?? ''}$monto - \$${formatMontoTasa()}')
       ],
     );
   }
 
   formatMontoTasa() {
-    double conversion = tasaSelected!.tasa * monto;
+    double conversion = tasa * monto;
     String fixed = conversion.toStringAsFixed(2);
     return double.parse(fixed);
   }
 
   Widget buildField(
       BuildContext context, String hintText, TextEditingController controller,
-      {int maxLength = 255, type, Widget? suffix, bool onlyDigits = false}) {
+      {int maxLength = 255,
+      type,
+      Widget? suffix,
+      bool onlyDigits = false,
+      required Function(String) onChange}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: TextFormField(
@@ -227,13 +184,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         inputFormatters: <TextInputFormatter>[
           if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
         ],
-        onChanged: (value) {
-          if (value != '') {
-            setState(() {
-              monto = double.parse(value);
-            });
-          }
-        },
+        onChanged: onChange,
       ),
     );
   }
@@ -267,25 +218,23 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
       ));
     }
 
-    final operacion = Operacion(
-        cliente: clienteSelected!,
-        cuentaEntrante: cuentaEntranteSelected!,
-        cuentaSaliente: cuentaSalienteSelected!,
+    final deposito = Deposito(
+        cuentaReceptora: cuentaEntranteSelected!,
         fecha: DateTime.now(),
         monto: double.parse(montoController.text),
-        tasa: tasaSelected!);
+        tasa: tasa);
 
     try {
-      operacion.referenciaComprobante.putData(comprobanteFile!.bytes!);
+      deposito.referenciaComprobante.putData(comprobanteFile!.bytes!);
 
-      await operacion.insert();
+      await deposito.insert();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Operacion Agregada'),
+        content: const Text('Deposito Agregada'),
       ));
 
-      return NavigationService.replaceTo(Flurorouter.operacionesRoute);
+      return NavigationService.replaceTo(Flurorouter.depositosRoute);
     } catch (err) {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -296,15 +245,13 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   }
 
   bool validate() {
-    if (clienteSelected == null) return false;
     if (cuentaEntranteSelected == null) return false;
-    if (tasaSelected == null) {
+    if (tasa == 0) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('No hay tasa registrada para el par seleccionado')));
       return false;
     }
 
-    if (cuentaSalienteSelected == null) return false;
     if (montoController.text == '' || montoController.text == '0') return false;
 
     if (comprobanteFile == null) false;

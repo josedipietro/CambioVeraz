@@ -1,8 +1,11 @@
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/providers/monedas_provider.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class NuevaCuentaPage extends StatefulWidget {
@@ -18,20 +21,33 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
   TextEditingController nombreTitularController = TextEditingController();
   TextEditingController numeroCuentaController = TextEditingController();
   TextEditingController numeroIdController = TextEditingController();
+  TextEditingController comisionController = TextEditingController();
 
   Moneda? monedaSelected;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: buildBody(context),
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        return true;
+      },
+      child: Scaffold(
+        appBar: buildAppBar(),
+        body: buildBody(context),
+      ),
     );
   }
 
   buildAppBar() {
     return AppBar(
       title: const Text('Agregar Cuenta'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        },
+      ),
     );
   }
 
@@ -59,6 +75,14 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
                 buildField(
                     context, 'Numero de Identificacion', numeroIdController,
                     maxLength: 30),
+                buildField(
+                  context,
+                  'Porcentaje de Comisión',
+                  comisionController,
+                  maxLength: 30,
+                  onlyDigits: true,
+                  suffix: const Text('%'),
+                ),
               ],
             ),
           ),
@@ -80,22 +104,30 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
     });
   }
 
-  buildField(
+  Widget buildField(
       BuildContext context, String hintText, TextEditingController controller,
-      {int maxLength = 255}) {
+      {int maxLength = 255,
+      Widget? suffix,
+      bool onlyDigits = false,
+      Function(String)? onChange}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         maxLength: maxLength,
         enableSuggestions: true,
+        keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          labelText: hintText,
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
-          border: const OutlineInputBorder(),
-          filled: true,
-          hoverColor: Theme.of(context).hoverColor,
-        ),
+            labelText: hintText,
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
+            border: const OutlineInputBorder(),
+            filled: true,
+            hoverColor: Theme.of(context).hoverColor,
+            suffix: suffix),
+        inputFormatters: <TextInputFormatter>[
+          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+        ],
+        onChanged: onChange,
       ),
     );
   }
@@ -113,7 +145,8 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
         moneda: monedaSelected!,
         nombreTitular: nombreTitularController.text,
         numeroCuenta: int.parse(numeroCuentaController.text),
-        numeroIdentificacion: int.parse(numeroIdController.text));
+        numeroIdentificacion: int.parse(numeroIdController.text),
+        comision: double.parse(comisionController.text));
 
     try {
       await cuenta.insert();
@@ -122,7 +155,7 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
         content: const Text('Cuenta Agregada'),
       ));
 
-      return Navigator.of(context).pop();
+      return NavigationService.replaceTo(Flurorouter.cuentasRoute);
     } catch (err) {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

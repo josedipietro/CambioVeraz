@@ -1,4 +1,6 @@
 import 'package:cambio_veraz/models/moneda.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 
 class NuevaMonedaPage extends StatefulWidget {
@@ -16,15 +18,27 @@ class _NuevaMonedaPageState extends State<NuevaMonedaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: buildBody(context),
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        return true;
+      },
+      child: Scaffold(
+        appBar: buildAppBar(),
+        body: buildBody(context),
+      ),
     );
   }
 
   buildAppBar() {
     return AppBar(
       title: const Text('Agregar Moneda'),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          NavigationService.replaceTo(Flurorouter.operacionesRoute);
+        },
+      ),
     );
   }
 
@@ -94,7 +108,7 @@ class _NuevaMonedaPageState extends State<NuevaMonedaPage> {
         content: Text('Moneda Agregada'),
       ));
 
-      return Navigator.of(context).pop();
+      return NavigationService.replaceTo(Flurorouter.monedasRoute);
     } catch (err) {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

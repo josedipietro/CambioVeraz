@@ -8,13 +8,15 @@ class Tasa extends ModeloBase {
   Moneda monedaEntrante;
   Moneda monedaSaliente;
   double tasa;
+  bool tasaEntrante;
 
   Tasa(
       {String? id,
       required this.nombre,
       required this.monedaEntrante,
       required this.monedaSaliente,
-      required this.tasa})
+      required this.tasa,
+      required this.tasaEntrante})
       : super(id: id ?? database.tasasRef.doc().id);
 
   @override
@@ -29,7 +31,8 @@ class Tasa extends ModeloBase {
         nombre: map['nombre'],
         monedaEntrante: monedaEntrante,
         monedaSaliente: monedaSaliente,
-        tasa: map["tasa"]);
+        tasa: map["tasa"],
+        tasaEntrante: map['tasaEntrante']);
   }
 
   factory Tasa.fromSnapshot(
@@ -41,6 +44,7 @@ class Tasa extends ModeloBase {
         nombre: snapshot.get('nombre'),
         monedaEntrante: monedaEntrante,
         monedaSaliente: monedaSaliente,
+        tasaEntrante: snapshot.get('tasaEntrante'),
         tasa: snapshot.get('tasa'));
   }
 
@@ -50,7 +54,8 @@ class Tasa extends ModeloBase {
       'nombre': nombre,
       'monedaEntrante': monedaEntrante.ref,
       'monedaSaliente': monedaSaliente.ref,
-      'tasa': tasa
+      'tasa': tasa,
+      'tasaEntrante': tasaEntrante,
     };
   }
 }

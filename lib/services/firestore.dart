@@ -105,7 +105,7 @@ class _Database {
   }
 
   Future<List<Cuenta>> get cuentas async {
-    final cliSnapshot = await cuentasRef.get();
+    final cliSnapshot = await cuentasRef.orderBy('nombre').get();
 
     final List<Cuenta> cuentas = [];
 
@@ -119,10 +119,7 @@ class _Database {
   }
 
   Stream<Future<List<Cuenta>>> get cuentasStream {
-    return cuentasRef
-        .orderBy('nombre', descending: true)
-        .snapshots()
-        .map((opSnapshot) async {
+    return cuentasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
       final List<Cuenta> operaciones = [];
 
       for (var e in opSnapshot.docs) {
@@ -148,10 +145,7 @@ class _Database {
   }
 
   Stream<List<Moneda>> get monedasStream {
-    return monedasRef
-        .orderBy('nombre', descending: true)
-        .snapshots()
-        .map((opSnapshot) {
+    return monedasRef.orderBy('nombre').snapshots().map((opSnapshot) {
       final List<Moneda> operaciones = [];
 
       for (var e in opSnapshot.docs) {
@@ -183,10 +177,7 @@ class _Database {
   }
 
   Stream<Future<List<Tasa>>> get tasasStream {
-    return tasasRef
-        .orderBy('nombre', descending: true)
-        .snapshots()
-        .map((opSnapshot) async {
+    return tasasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
       final List<Tasa> operaciones = [];
 
       for (var e in opSnapshot.docs) {
@@ -302,6 +293,36 @@ class _Database {
     final cuenta = Cuenta.fromSnapshot(snapshot: cuenSnapshot, moneda: moneda);
 
     return cuenta;
+  }
+
+  Future<double> getBalanceCuenta(Cuenta cuenta) async {
+    final depositosList = await arcas;
+    final operacionesList = await operaciones;
+
+    final depositos = depositosList
+        .where((element) => element.cuentaReceptora.id == cuenta.id);
+
+    final operacionesRecibe = operacionesList
+        .where((element) => element.cuentaEntrante.id == cuenta.id);
+
+    final operacionesEnvia = operacionesList
+        .where((element) => element.cuentaSaliente.id == cuenta.id);
+
+    double balance = 0;
+
+    for (var element in depositos) {
+      balance += element.monto;
+    }
+
+    for (var element in operacionesRecibe) {
+      balance += element.monto;
+    }
+
+    for (var element in operacionesEnvia) {
+      balance -= element.monto;
+    }
+
+    return balance;
   }
 }
 

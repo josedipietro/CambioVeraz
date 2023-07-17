@@ -1,6 +1,7 @@
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/modelo_base.dart';
 import 'package:cambio_veraz/services/firestore.dart';
+import 'package:cambio_veraz/services/storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Deposito extends ModeloBase {
@@ -20,6 +21,10 @@ class Deposito extends ModeloBase {
   @override
   DocumentReference get ref => database.arcasRef.doc(id);
 
+  get referenciaComprobante {
+    return storage.arcasRef.child(id);
+  }
+
   factory Deposito.fromSnapshot(
       {required DocumentSnapshot snapshot, required Cuenta cuentaReceptora}) {
     return Deposito(
@@ -35,7 +40,14 @@ class Deposito extends ModeloBase {
     return {
       'monto': monto,
       'tasa': tasa,
-      'cuentaReceptora': cuentaReceptora.ref
+      'cuentaReceptora': cuentaReceptora.ref,
+      'fecha': fecha
     };
+  }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return cuentaReceptora.nombre;
   }
 }

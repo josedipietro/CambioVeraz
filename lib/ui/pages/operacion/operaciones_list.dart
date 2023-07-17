@@ -1,5 +1,7 @@
 import 'package:cambio_veraz/models/operacion.dart';
-import 'package:cambio_veraz/providers/OperacionesProvider.dart';
+import 'package:cambio_veraz/providers/operaciones_provider.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/pages/operacion/widget/operacion_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,10 @@ class OperacionesListPage extends StatefulWidget {
 class _OperacionesListPageState extends State<OperacionesListPage> {
   final TextEditingController buscadorController = TextEditingController();
 
+  navigateTo(String route) {
+    NavigationService.navigateTo(route);
+  }
+
   @override
   Widget build(BuildContext context) {
     print('operacions list');
@@ -31,12 +37,41 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text(
-              'Operaciones',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Operaciones',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        navigateTo(Flurorouter.depositosRoute);
+                      },
+                      icon: const Icon(
+                        Icons.collections_bookmark,
+                        size: 32,
+                      )),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        navigateTo(Flurorouter.cuentasRoute);
+                      },
+                      icon: const Icon(
+                        Icons.account_balance_rounded,
+                        size: 32,
+                      )),
+                ],
+              )
+            ],
           ),
           buildBuscador(context),
           !operacionsProvider.loading

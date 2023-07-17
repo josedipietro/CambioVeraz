@@ -1,5 +1,6 @@
 import 'package:cambio_veraz/firebase_options.dart';
-import 'package:cambio_veraz/providers/OperacionesProvider.dart';
+import 'package:cambio_veraz/providers/depositos_provider.dart';
+import 'package:cambio_veraz/providers/operaciones_provider.dart';
 import 'package:cambio_veraz/providers/auth_provider.dart';
 import 'package:cambio_veraz/providers/clientes_provider.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
@@ -43,6 +44,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(lazy: false, create: (_) => CuentasProvider()),
         ChangeNotifierProvider(
             lazy: false, create: (_) => OperacionesProvider()),
+        ChangeNotifierProvider(lazy: false, create: (_) => DepositosProvider()),
       ],
       child: const MyApp(),
     );
@@ -56,7 +58,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Elohim',
+      title: 'Cambio Veraz',
       initialRoute: '/',
       onGenerateRoute: Flurorouter.router.generator,
       navigatorKey: NavigationService.navigatorKey,

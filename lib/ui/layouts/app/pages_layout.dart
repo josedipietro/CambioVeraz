@@ -19,46 +19,47 @@ class PagesLayout extends StatefulWidget {
 class _PagesLayoutState extends State<PagesLayout> {
   floatingActionButtonHandler(currentPage) {
     print('floatingActionButtonHandler');
+    print(currentPage);
     switch (currentPage) {
       case Flurorouter.tasasRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarTasaRoute),
+                NavigationService.replaceTo(Flurorouter.agregarTasaRoute),
             child: const Icon(Icons.add));
       case Flurorouter.operacionesRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarOperacionRoute),
+                NavigationService.replaceTo(Flurorouter.agregarOperacionRoute),
             child: const Icon(Icons.add));
       case Flurorouter.clientesRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarClienteRoute),
+                NavigationService.replaceTo(Flurorouter.agregarClienteRoute),
             child: const Icon(Icons.add));
       case Flurorouter.cuentasRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarCuentaRoute),
+                NavigationService.replaceTo(Flurorouter.agregarCuentaRoute),
             child: const Icon(Icons.add));
       case Flurorouter.monedasRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarMonedaRoute),
+                NavigationService.replaceTo(Flurorouter.agregarMonedaRoute),
             child: const Icon(Icons.add));
       case Flurorouter.usuariosRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarUsuarioRoute),
+                NavigationService.replaceTo(Flurorouter.agregarUsuarioRoute),
             child: const Icon(Icons.add));
       case Flurorouter.rolesRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarRolRoute),
+                NavigationService.replaceTo(Flurorouter.agregarRolRoute),
             child: const Icon(Icons.add));
       case Flurorouter.depositosRoute:
         return FloatingActionButton(
             onPressed: () =>
-                NavigationService.navigateTo(Flurorouter.agregarDepositoRoute),
+                NavigationService.replaceTo(Flurorouter.agregarDepositoRoute),
             child: const Icon(Icons.add));
       /* case UsuariosListPage:
         NavigationService.navigateTo();

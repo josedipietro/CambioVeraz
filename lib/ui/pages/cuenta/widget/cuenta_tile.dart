@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 
 class CuentaTile extends StatelessWidget {
   final Cuenta cuenta;
+  final double balance;
   final void Function(Cuenta) onRemove;
 
-  const CuentaTile({
-    super.key,
-    required this.cuenta,
-    required this.onRemove,
-  });
+  const CuentaTile(
+      {super.key,
+      required this.cuenta,
+      required this.onRemove,
+      required this.balance});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,30 @@ class CuentaTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildTitleAndDescription(),
-          Expanded(child: Text(cuenta.nombreTitular)),
+          Expanded(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Titular',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              Text(cuenta.nombreTitular),
+            ],
+          )),
+          Expanded(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Balance',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              Text('${cuenta.moneda.simbolo}$balance'),
+            ],
+          )),
           _buildRemovableArea(context),
         ],
       ),
@@ -50,7 +74,7 @@ class CuentaTile extends StatelessWidget {
               ),
             ),
             Text(
-              '${cuenta.moneda.nombreISO} (${cuenta.moneda.nombreISO})',
+              '${cuenta.moneda.nombreISO} (${cuenta.moneda.simbolo})',
               style: const TextStyle(
                 fontSize: 12,
               ),
