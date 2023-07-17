@@ -3,13 +3,13 @@ import 'package:cambio_veraz/models/modelo_base.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Arca extends ModeloBase {
+class Deposito extends ModeloBase {
   Cuenta cuentaReceptora;
   double monto;
   double tasa;
   DateTime fecha;
 
-  Arca(
+  Deposito(
       {String? id,
       required this.cuentaReceptora,
       required this.monto,
@@ -20,9 +20,9 @@ class Arca extends ModeloBase {
   @override
   DocumentReference get ref => database.arcasRef.doc(id);
 
-  factory Arca.fromSnapshot(
+  factory Deposito.fromSnapshot(
       {required DocumentSnapshot snapshot, required Cuenta cuentaReceptora}) {
-    return Arca(
+    return Deposito(
         id: snapshot.id,
         cuentaReceptora: cuentaReceptora,
         monto: snapshot.get('monto'),

@@ -27,13 +27,38 @@ class _PagesLayoutState extends State<PagesLayout> {
             child: const Icon(Icons.add));
       case Flurorouter.operacionesRoute:
         return FloatingActionButton(
-            onPressed: () => NavigationService.navigateTo(
-                Flurorouter.agregarOperacioneRoute),
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarOperacionRoute),
             child: const Icon(Icons.add));
       case Flurorouter.clientesRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.navigateTo(Flurorouter.agregarClienteRoute),
+            child: const Icon(Icons.add));
+      case Flurorouter.cuentasRoute:
+        return FloatingActionButton(
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarCuentaRoute),
+            child: const Icon(Icons.add));
+      case Flurorouter.monedasRoute:
+        return FloatingActionButton(
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarMonedaRoute),
+            child: const Icon(Icons.add));
+      case Flurorouter.usuariosRoute:
+        return FloatingActionButton(
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarUsuarioRoute),
+            child: const Icon(Icons.add));
+      case Flurorouter.rolesRoute:
+        return FloatingActionButton(
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarRolRoute),
+            child: const Icon(Icons.add));
+      case Flurorouter.depositosRoute:
+        return FloatingActionButton(
+            onPressed: () =>
+                NavigationService.navigateTo(Flurorouter.agregarDepositoRoute),
             child: const Icon(Icons.add));
       /* case UsuariosListPage:
         NavigationService.navigateTo();

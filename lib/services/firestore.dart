@@ -205,35 +205,35 @@ class _Database {
     });
   }
 
-  Future<List<Arca>> get arcas async {
+  Future<List<Deposito>> get arcas async {
     final snapshot = await arcasRef.get();
 
-    final List<Arca> list = [];
+    final List<Deposito> list = [];
 
     for (var e in snapshot.docs) {
       final cuentaReceptora =
           await getCuentaByReference(e.get('cuentaReceptora'));
 
       list.add(
-          Arca.fromSnapshot(snapshot: e, cuentaReceptora: cuentaReceptora));
+          Deposito.fromSnapshot(snapshot: e, cuentaReceptora: cuentaReceptora));
     }
 
     return list;
   }
 
-  Stream<Future<List<Arca>>> get arcasStream {
+  Stream<Future<List<Deposito>>> get arcasStream {
     return arcasRef
         .orderBy('fecha', descending: true)
         .snapshots()
         .map((opSnapshot) async {
-      final List<Arca> operaciones = [];
+      final List<Deposito> operaciones = [];
 
       for (var e in opSnapshot.docs) {
         final cuentaReceptora =
             await getCuentaByReference(e.get('cuentaReceptora'));
 
-        operaciones.add(
-            Arca.fromSnapshot(snapshot: e, cuentaReceptora: cuentaReceptora));
+        operaciones.add(Deposito.fromSnapshot(
+            snapshot: e, cuentaReceptora: cuentaReceptora));
       }
 
       return operaciones;

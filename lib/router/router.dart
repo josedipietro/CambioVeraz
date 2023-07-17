@@ -19,7 +19,9 @@ class Flurorouter {
   static const String tasasRoute = '/tasas';
   static const String agregarTasaRoute = '/tasas/agregar';
   static const String operacionesRoute = '/operaciones';
-  static const String agregarOperacioneRoute = '/operaciones/agregar';
+  static const String agregarOperacionRoute = '/operaciones/agregar';
+  static const String depositosRoute = '/depositos';
+  static const String agregarDepositoRoute = '/depositos/agregar';
   static const String rolesRoute = '/roles';
   static const String agregarRolRoute = '/roles/agregar';
   static const String monedasRoute = '/monedas';
