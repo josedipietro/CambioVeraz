@@ -1,6 +1,7 @@
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -65,9 +66,13 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
                     maxLength: 30),
                 buildUploadFileButton('Subir Cedula', (file) {
                   cedulaFile = file;
+                  NotificationsService.showSnackbar(
+                      'Imagen ${file.name} cargada');
                 }),
                 buildUploadFileButton('Subir Foto', (file) {
                   fotoFile = file;
+                  NotificationsService.showSnackbar(
+                      'Imagen ${file.name} cargada');
                 })
               ],
             ),

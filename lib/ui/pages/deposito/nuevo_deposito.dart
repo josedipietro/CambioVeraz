@@ -5,6 +5,7 @@ import 'package:cambio_veraz/providers/cuentas_provider.dart';
 import 'package:cambio_veraz/providers/monedas_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Deposito'),
+      title: const Text('Agregar Fondeo'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -110,6 +111,8 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
                   }),
                 buildUploadFileButton('Subir Comprobante', (file) {
                   comprobanteFile = file;
+                  NotificationsService.showSnackbar(
+                      'Comprobante ${file.name} cargado');
                 }),
                 if (tasa > 0) buildDepositoTasaPreview(),
               ],
@@ -121,7 +124,7 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
             height: 60,
             child: OutlinedButton(
               onPressed: tasa > 0 ? agregar : () {},
-              child: const Text('Agregar Deposito'),
+              child: const Text('Agregar Fondeo'),
             ),
           ),
         ],
@@ -231,7 +234,7 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Deposito Agregada'),
+        content: const Text('Fondeo agregado'),
       ));
 
       return NavigationService.replaceTo(Flurorouter.depositosRoute);

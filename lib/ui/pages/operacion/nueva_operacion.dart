@@ -9,6 +9,7 @@ import 'package:cambio_veraz/providers/monedas_provider.dart';
 import 'package:cambio_veraz/providers/tasas_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,8 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                       onlyDigits: true),
                 buildUploadFileButton('Subir Comprobante', (file) {
                   comprobanteFile = file;
+                  NotificationsService.showSnackbar(
+                      'Comprobante ${file.name} cargado');
                 }),
                 if (tasaSelected != null) buildOperacionTasaPreview(),
               ],

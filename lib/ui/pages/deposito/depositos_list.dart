@@ -51,7 +51,7 @@ class _DepositosListPageState extends State<DepositosListPage> {
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Depositos',
+                  'Fondeos',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                 ),
               )
