@@ -44,6 +44,7 @@ class Cuenta extends ModeloBase {
       'nombreTitular': nombreTitular,
       'numeroCuenta': numeroCuenta,
       'numeroIdentificacion': numeroIdentificacion,
+      'comision': comision,
     };
   }
 

@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "site": "cambios-veraz-operaciones",
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

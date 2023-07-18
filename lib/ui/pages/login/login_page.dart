@@ -13,6 +13,11 @@ class LoginPage extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
 
+    iniciarSesion() async {
+      await authProvider.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -42,6 +47,8 @@ class LoginPage extends StatelessWidget {
                   children: [
                     TextFormField(
                       controller: emailController,
+                      autofocus: true,
+                      textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                           hintStyle: TextStyle(color: Colors.grey),
                           hintText: 'Correo',
@@ -53,6 +60,8 @@ class LoginPage extends StatelessWidget {
                     TextField(
                       controller: passwordController,
                       obscureText: true,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: () {},
                       decoration: const InputDecoration(
                           hintStyle: TextStyle(color: Colors.grey),
                           hintText: 'Contraseña',
@@ -63,11 +72,7 @@ class LoginPage extends StatelessWidget {
               ),
               CustomButton(
                 text: 'Iniciar Sesión',
-                press: () async {
-                  await authProvider.signInWithEmailAndPassword(
-                      email: emailController.text,
-                      password: passwordController.text);
-                },
+                press: iniciarSesion,
                 disabled: authProvider.authStatus == AuthStatus.checking,
                 color: Theme.of(context).colorScheme.secondary,
                 colorText: Theme.of(context).colorScheme.onSecondary,

@@ -40,8 +40,8 @@ class _CuentasListPageState extends State<CuentasListPage> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                  onPressed: () =>
-                      NavigationService.navigateTo(Flurorouter.cuentasRoute),
+                  onPressed: () => NavigationService.navigateTo(
+                      Flurorouter.operacionesRoute),
                 ),
               ),
               const Padding(
