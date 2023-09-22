@@ -105,7 +105,9 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
       itemCount: operaciones.length,
       itemBuilder: (context, index) => OperacionTile(
         operacion: operaciones[index],
-        onRemove: (operacion) {},
+        onRemove: (model) {
+          model.delete();
+        },
       ),
     ));
   }

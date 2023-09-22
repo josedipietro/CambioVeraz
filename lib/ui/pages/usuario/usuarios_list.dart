@@ -1,22 +1,22 @@
-import 'package:cambio_veraz/models/tasa.dart';
-import 'package:cambio_veraz/providers/tasas_provider.dart';
+import 'package:cambio_veraz/models/usuario.dart';
+import 'package:cambio_veraz/providers/usuarios_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
-import 'package:cambio_veraz/ui/pages/tasa/widgets/tasa_tile.dart';
+import 'package:cambio_veraz/ui/pages/usuario/widgets/usuario_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class TasasListPage extends StatefulWidget {
-  static String route = '/tasas';
+class UsuariosListPage extends StatefulWidget {
+  static String route = '/usuarios';
 
-  const TasasListPage({super.key});
+  const UsuariosListPage({super.key});
 
   @override
-  State<TasasListPage> createState() => _TasasListPageState();
+  State<UsuariosListPage> createState() => _UsuariosListPageState();
 }
 
-class _TasasListPageState extends State<TasasListPage> {
+class _UsuariosListPageState extends State<UsuariosListPage> {
   final TextEditingController buscadorController = TextEditingController();
 
   navigateTo(String route) {
@@ -25,13 +25,13 @@ class _TasasListPageState extends State<TasasListPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('tasas list');
-    final tasasProvider = context.watch<TasasProvider>();
+    print('usuarios list');
+    final usuariosProvider = context.watch<UsuariosProvider>();
 
-    return buildBody(context, tasasProvider);
+    return buildBody(context, usuariosProvider);
   }
 
-  buildBody(BuildContext context, TasasProvider tasasProvider) {
+  buildBody(BuildContext context, UsuariosProvider usuariosProvider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -44,7 +44,7 @@ class _TasasListPageState extends State<TasasListPage> {
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Tasas',
+                  'Usuarios',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                 ),
               ),
@@ -59,8 +59,8 @@ class _TasasListPageState extends State<TasasListPage> {
             ],
           ),
           buildBuscador(context),
-          !tasasProvider.loading
-              ? buildList(context, tasasProvider.tasas)
+          !usuariosProvider.loading
+              ? buildList(context, usuariosProvider.usuarios)
               : const Center(child: CupertinoActivityIndicator()),
         ],
       ),
@@ -84,15 +84,13 @@ class _TasasListPageState extends State<TasasListPage> {
         ));
   }
 
-  buildList(BuildContext context, List<Tasa> tasas) {
+  buildList(BuildContext context, List<Usuario> usuarios) {
     return Expanded(
         child: ListView.builder(
-      itemCount: tasas.length,
-      itemBuilder: (context, index) => TasaTile(
-        tasa: tasas[index],
-        onRemove: (model) {
-          model.delete();
-        },
+      itemCount: usuarios.length,
+      itemBuilder: (context, index) => UsuarioTile(
+        usuario: usuarios[index],
+        onRemove: (usuario) {},
       ),
     ));
   }

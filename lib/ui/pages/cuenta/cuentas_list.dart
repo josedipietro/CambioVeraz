@@ -90,7 +90,9 @@ class _CuentasListPageState extends State<CuentasListPage> {
             builder: (context, snapshot) {
               return CuentaTile(
                   cuenta: cuentas[index],
-                  onRemove: (moneda) {},
+                  onRemove: (model) {
+                    model.delete();
+                  },
                   balance: snapshot.data ?? 0);
             });
       },

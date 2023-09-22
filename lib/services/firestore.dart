@@ -5,7 +5,7 @@ import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/models/rol.dart';
 import 'package:cambio_veraz/models/tasa.dart';
-import 'package:cambio_veraz/models/user.dart';
+import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class _Database {
@@ -237,10 +237,26 @@ class _Database {
     return snapshot.docs.map<Rol>((e) => Rol.fromSnapshot(e)).toList();
   }
 
-  Future<List<User>> get usuarios async {
+  Future<List<Usuario>> get usuarios async {
     final snapshot = await usuariosRef.get();
 
-    return snapshot.docs.map<User>((e) => User.fromSnapshot(e)).toList();
+    return snapshot.docs.map<Usuario>((e) => Usuario.fromSnapshot(e)).toList();
+  }
+
+  Future<Usuario> getUsuarioById(String id) async {
+    final snapshot = await usuariosRef.doc(id).get();
+
+    final usuario = Usuario.fromSnapshot(snapshot);
+
+    return usuario;
+  }
+
+  Future<Usuario> getUsuarioByReference(DocumentReference ref) async {
+    final snapshot = await usuariosRef.doc(ref.id).get();
+
+    final usuario = Usuario.fromSnapshot(snapshot);
+
+    return usuario;
   }
 
   Future<Cliente> getClienteById(String id) async {
@@ -319,7 +335,7 @@ class _Database {
     }
 
     for (var element in operacionesEnvia) {
-      balance -= element.monto;
+      balance -= element.monto * element.tasa.tasa;
     }
 
     return balance;

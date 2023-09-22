@@ -77,11 +77,22 @@ class _NuevaTasaPageState extends State<NuevaTasaPage> {
                 if (monedaSalienteSelected != null)
                   Row(
                     children: [
-                      buildField(context, 'Tasa', tasaController,
-                          maxLength: 30,
-                          type: TextInputType.number,
-                          onlyDigits: true,
-                          suffix: Text(monedaSalienteSelected!.simbolo)),
+                      buildField(
+                        context,
+                        'Tasa',
+                        tasaController,
+                        maxLength: 30,
+                        type: TextInputType.number,
+                        onlyDigits: true,
+                        suffix: Text(monedaSalienteSelected!.simbolo),
+                        onChange: (value) {
+                          if (value != '') {
+                            setState(() {
+                              tasa = double.parse(value);
+                            });
+                          }
+                        },
+                      ),
                       Switch(
                           value: tasaEntrante,
                           onChanged: (value) {
@@ -141,7 +152,8 @@ class _NuevaTasaPageState extends State<NuevaTasaPage> {
       {int maxLength = 255,
       TextInputType? type,
       Widget? suffix,
-      bool onlyDigits = false}) {
+      bool onlyDigits = false,
+      Function(String)? onChange}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: SizedBox(
@@ -151,13 +163,7 @@ class _NuevaTasaPageState extends State<NuevaTasaPage> {
           maxLength: maxLength,
           enableSuggestions: true,
           keyboardType: TextInputType.number,
-          onChanged: (value) {
-            if (value != '') {
-              setState(() {
-                tasa = double.parse(value);
-              });
-            }
-          },
+          onChanged: onChange,
           decoration: InputDecoration(
               labelText: hintText,
               floatingLabelBehavior: FloatingLabelBehavior.auto,

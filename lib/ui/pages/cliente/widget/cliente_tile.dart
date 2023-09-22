@@ -72,8 +72,7 @@ class ClienteTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta reservación?',
-        title: 'Eliminar Reservación');
+        message: '¿Deseas eliminar este Cliente?', title: 'Eliminar Cliente');
     if (confirm == true) {
       onRemove(cliente);
     }

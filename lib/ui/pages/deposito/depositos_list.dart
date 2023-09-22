@@ -89,7 +89,9 @@ class _DepositosListPageState extends State<DepositosListPage> {
       itemCount: depositos.length,
       itemBuilder: (context, index) => DepositoTile(
         deposito: depositos[index],
-        onRemove: (deposito) {},
+        onRemove: (model) {
+          model.delete();
+        },
       ),
     ));
   }

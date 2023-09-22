@@ -1,17 +1,16 @@
-import 'package:cambio_veraz/models/cuenta.dart';
+import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 
-class CuentaTile extends StatelessWidget {
-  final Cuenta cuenta;
-  final double balance;
-  final void Function(Cuenta) onRemove;
+class UsuarioTile extends StatelessWidget {
+  final Usuario usuario;
+  final void Function(Usuario) onRemove;
 
-  const CuentaTile(
-      {super.key,
-      required this.cuenta,
-      required this.onRemove,
-      required this.balance});
+  const UsuarioTile({
+    super.key,
+    required this.usuario,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,30 +24,13 @@ class CuentaTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildTitleAndDescription(),
-          Expanded(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Titular',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-              Text(cuenta.nombreTitular),
-            ],
-          )),
-          Expanded(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Balance',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-              Text('${cuenta.moneda.simbolo}$balance'),
-            ],
-          )),
+          /* Expanded(
+            child: usuario
+                ? Text('${usuario}1 - $usuario$usuario')
+                : Text(
+                    '${usuario}1 - $usuario',
+                  ),
+          ), */
           _buildRemovableArea(context),
         ],
       ),
@@ -64,7 +46,7 @@ class CuentaTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              cuenta.nombre,
+              '${usuario.nombre}',
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -74,7 +56,7 @@ class CuentaTile extends StatelessWidget {
               ),
             ),
             Text(
-              '${cuenta.moneda.nombreISO} (${cuenta.moneda.simbolo})',
+              '${usuario.email}',
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -97,9 +79,9 @@ class CuentaTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta Cuenta?', title: 'Eliminar Cuenta');
+        message: '¿Deseas eliminar este Usuario?', title: 'Eliminar Usuario');
     if (confirm == true) {
-      onRemove(cuenta);
+      onRemove(usuario);
     }
   }
 }

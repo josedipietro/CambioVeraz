@@ -61,7 +61,7 @@ class LoginPage extends StatelessWidget {
                       controller: passwordController,
                       obscureText: true,
                       textInputAction: TextInputAction.done,
-                      onEditingComplete: () {},
+                      onEditingComplete: iniciarSesion,
                       decoration: const InputDecoration(
                           hintStyle: TextStyle(color: Colors.grey),
                           hintText: 'Contraseña',

@@ -70,7 +70,9 @@ class _ClientesListPageState extends State<ClientesListPage> {
       itemCount: clientes.length,
       itemBuilder: (context, index) => ClienteTile(
         cliente: clientes[index],
-        onRemove: (cliente) {},
+        onRemove: (model) {
+          model.delete();
+        },
       ),
     ));
   }

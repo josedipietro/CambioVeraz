@@ -144,8 +144,8 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
         nombre: nombreController.text,
         moneda: monedaSelected!,
         nombreTitular: nombreTitularController.text,
-        numeroCuenta: int.parse(numeroCuentaController.text),
-        numeroIdentificacion: int.parse(numeroIdController.text),
+        numeroCuenta: numeroCuentaController.text,
+        numeroIdentificacion: numeroIdController.text,
         comision: double.parse(comisionController.text));
 
     try {

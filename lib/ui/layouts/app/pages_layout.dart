@@ -18,8 +18,6 @@ class PagesLayout extends StatefulWidget {
 
 class _PagesLayoutState extends State<PagesLayout> {
   floatingActionButtonHandler(currentPage) {
-    print('floatingActionButtonHandler');
-    print(currentPage);
     switch (currentPage) {
       case Flurorouter.tasasRoute:
         return FloatingActionButton(

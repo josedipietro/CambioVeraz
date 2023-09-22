@@ -72,8 +72,7 @@ class MonedaTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta reservación?',
-        title: 'Eliminar Reservación');
+        message: '¿Deseas eliminar esta Moneda?', title: 'Eliminar Moneda');
     if (confirm == true) {
       onRemove(moneda);
     }

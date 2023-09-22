@@ -78,8 +78,7 @@ class TasaTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta reservación?',
-        title: 'Eliminar Reservación');
+        message: '¿Deseas eliminar esta tasa?', title: 'Eliminar Tasa');
     if (confirm == true) {
       onRemove(tasa);
     }

@@ -104,8 +104,8 @@ class OperacionTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta reservación?',
-        title: 'Eliminar Reservación');
+        message: '¿Deseas eliminar esta Operación?',
+        title: 'Eliminar Operación');
     if (confirm == true) {
       onRemove(operacion);
     }

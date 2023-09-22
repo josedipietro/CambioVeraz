@@ -1,12 +1,14 @@
-import 'package:cambio_veraz/models/user.dart';
+import 'package:cambio_veraz/models/usuario.dart';
+import 'package:cambio_veraz/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 enum AuthStatus { checking, authenticated, notAuthenticated }
 
 class AuthProvider extends ChangeNotifier {
-  String? _token;
   AuthStatus authStatus = AuthStatus.checking;
+
+  Usuario? _usuario;
 
   AuthProvider() {
     isAuthenticated();
@@ -14,9 +16,10 @@ class AuthProvider extends ChangeNotifier {
 
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  User? get currentUser => _userFromFirebase(_firebaseAuth.currentUser);
+  Usuario? get currentUser => _userFromFirebase(_firebaseAuth.currentUser);
+  Usuario? get usuario => _usuario;
 
-  User? _userFromFirebase(auth.User? user) {
+  Usuario? _userFromFirebase(auth.User? user) {
     if (user == null) {
       authStatus = AuthStatus.notAuthenticated;
       notifyListeners();
@@ -24,14 +27,23 @@ class AuthProvider extends ChangeNotifier {
     }
 
     authStatus = AuthStatus.authenticated;
+
+    getUsuario(user.uid);
+
     notifyListeners();
-    return User(id: user.uid, email: user.email, nombre: user.displayName);
+    return Usuario(id: user.uid, email: user.email!, nombre: user.displayName);
   }
 
-  Stream<User?> get authStateChanges =>
+  getUsuario(String id) async {
+    final user = await database.getUsuarioById(id);
+
+    _usuario = user;
+  }
+
+  Stream<Usuario?> get authStateChanges =>
       _firebaseAuth.authStateChanges().map(_userFromFirebase);
 
-  Future<User?> signInWithEmailAndPassword(
+  Future<Usuario?> signInWithEmailAndPassword(
       {required String email, required String password}) async {
     final credential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
@@ -39,7 +51,7 @@ class AuthProvider extends ChangeNotifier {
     return _userFromFirebase(credential.user);
   }
 
-  Future<User?> createUserWithEmailAndPassword(
+  Future<Usuario?> createUserWithEmailAndPassword(
       {required String email, required String password}) async {
     final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);

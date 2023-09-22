@@ -104,8 +104,7 @@ class DepositoTile extends StatelessWidget {
 
   void _onRemove(BuildContext context) async {
     final confirm = await showAlertDialog(context,
-        message: '¿Deseas eliminar esta reservación?',
-        title: 'Eliminar Reservación');
+        message: '¿Deseas eliminar este Deposito?', title: 'Eliminar Deposito');
     if (confirm == true) {
       onRemove(deposito);
     }

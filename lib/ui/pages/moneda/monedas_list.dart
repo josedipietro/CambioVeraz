@@ -90,7 +90,9 @@ class _MonedasListPageState extends State<MonedasListPage> {
       itemCount: monedas.length,
       itemBuilder: (context, index) => MonedaTile(
         moneda: monedas[index],
-        onRemove: (moneda) {},
+        onRemove: (model) {
+          model.delete();
+        },
       ),
     ));
   }

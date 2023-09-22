@@ -10,7 +10,22 @@ abstract class ModeloBase {
   Map<String, dynamic> toJson();
 
   Future insert() async {
-    ref.set(toJson());
+    await ref.set(toJson());
+    return true;
+  }
+
+  Future delete() async {
+    if ((await ref.get()).exists) {
+      await ref.delete();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future update() async {
+    await ref.update(toJson());
+    return true;
   }
 
   @override

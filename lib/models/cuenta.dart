@@ -7,8 +7,8 @@ class Cuenta extends ModeloBase {
   String nombre;
   Moneda moneda;
   String nombreTitular;
-  int numeroCuenta;
-  int numeroIdentificacion;
+  String numeroCuenta;
+  String numeroIdentificacion;
   double comision;
 
   Cuenta(
@@ -32,8 +32,8 @@ class Cuenta extends ModeloBase {
         nombreTitular: snapshot.get('nombreTitular'),
         moneda: moneda,
         comision: snapshot.get('comision') ?? 0,
-        numeroCuenta: snapshot.get('numeroCuenta'),
-        numeroIdentificacion: snapshot.get('numeroIdentificacion'));
+        numeroCuenta: snapshot.get('numeroCuenta').toString(),
+        numeroIdentificacion: snapshot.get('numeroIdentificacion').toString());
   }
 
   @override
