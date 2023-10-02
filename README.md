@@ -1,3 +1,3 @@
-# cambio_veraz
+# CAMBIO VERAZ APP
 
-A new Flutter project.
+Desarrollo de App multiplataforma para operadores de Cambio Veraz con Flutter y Firebase
