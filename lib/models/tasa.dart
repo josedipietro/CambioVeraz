@@ -9,6 +9,7 @@ class Tasa extends ModeloBase {
   Moneda monedaSaliente;
   double tasa;
   bool tasaEntrante;
+  DateTime? ultimaActualizacion;
 
   Tasa(
       {String? id,

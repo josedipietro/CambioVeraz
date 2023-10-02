@@ -67,6 +67,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         color: Theme.of(context).colorScheme.secondary,
         animationDuration: const Duration(milliseconds: 400),
         index: currentPageToIndex(pagesProvider.currentPage),
+        height: 60,
         onTap: (value) {
           selectedPageIndex = value;
           var routeName = '';
@@ -90,26 +91,53 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           }
           navigateTo(routeName);
         },
-        items: const [
-          Icon(
-            Icons.bar_chart_rounded,
-            color: Colors.white,
+        items: [
+          Container(
+            child: Column(
+              children: const [
+                Icon(
+                  Icons.bar_chart_rounded,
+                  color: Colors.white,
+                ),
+                Text('Tasas')
+              ],
+            ),
           ),
-          Icon(
-            Icons.assignment,
-            color: Colors.white,
+          Column(
+            children: const [
+              Icon(
+                Icons.assignment,
+                color: Colors.white,
+              ),
+              Text('Operaciones')
+            ],
           ),
-          Icon(
-            Icons.home_rounded,
-            color: Colors.white,
+          Column(
+            children: const [
+              Icon(
+                Icons.home_rounded,
+                color: Colors.white,
+              ),
+              Text('Inicio')
+            ],
           ),
-          Icon(
-            Icons.person_pin_rounded,
-            color: Colors.white,
+          Column(
+            children: const [
+              Icon(
+                Icons.person_pin_rounded,
+                color: Colors.white,
+              ),
+              Text('Clientes')
+            ],
           ),
-          Icon(
-            Icons.person,
-            color: Colors.white,
+          Column(
+            children: const [
+              Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              Text('Usuarios')
+            ],
           ),
         ]);
   }
