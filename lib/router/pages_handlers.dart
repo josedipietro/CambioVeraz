@@ -2,6 +2,7 @@ import 'package:cambio_veraz/providers/auth_provider.dart';
 import 'package:cambio_veraz/providers/pages_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/ui/pages/cliente/clientes_list.dart';
+import 'package:cambio_veraz/ui/pages/cliente/editar_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cliente/nuevo_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/cuentas_list.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/nueva_cuenta.dart';
@@ -84,6 +85,19 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const NuevoClientePage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler editarCliente = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarClienteRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return EditarClientePage(clienteId: params["id"]![0]);
     } else {
       return const LoginPage();
     }

@@ -14,6 +14,7 @@ class Flurorouter {
   static const String dashboardRoute = '/dashboard';
   static const String clientesRoute = '/clientes';
   static const String agregarClienteRoute = '/clientes/agregar';
+  static const String editarClienteRoute = '/clientes/editarCliente/:id';
   static const String cuentasRoute = '/cuentas';
   static const String agregarCuentaRoute = '/cuentas/agregar';
   static const String tasasRoute = '/tasas';
@@ -98,6 +99,10 @@ class Flurorouter {
 
     router.define(agregarDepositoRoute,
         handler: PagesHandlers.agregarDeposito,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(editarClienteRoute,
+        handler: PagesHandlers.editarCliente,
         transitionType: TransitionType.fadeIn);
 
     // 404
