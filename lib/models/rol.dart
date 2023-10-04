@@ -6,8 +6,14 @@ class Rol extends ModeloBase {
   String nombre;
   List permisos;
 
-  Rol({String? id, required this.nombre, required this.permisos})
-      : super(id: id ?? database.rolesRef.doc().id);
+  Rol(
+      {String? id,
+      DateTime? ultimaModificacion,
+      required this.nombre,
+      required this.permisos})
+      : super(
+            id: id ?? database.rolesRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   get ref => database.rolesRef.doc(id);
@@ -24,6 +30,7 @@ class Rol extends ModeloBase {
     return {
       'nombre': nombre,
       'permisos': permisos,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 }

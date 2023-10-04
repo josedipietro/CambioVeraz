@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class ModeloBase {
   String id;
+  DateTime? ultimaModificacion;
 
-  ModeloBase({required this.id});
+  ModeloBase({required this.id, this.ultimaModificacion});
 
   DocumentReference get ref;
 

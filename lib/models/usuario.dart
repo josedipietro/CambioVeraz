@@ -6,8 +6,14 @@ class Usuario extends ModeloBase {
   String email;
   String? nombre;
 
-  Usuario({String? id, required this.email, this.nombre})
-      : super(id: id ?? database.tasasRef.doc().id);
+  Usuario(
+      {String? id,
+      DateTime? ultimaModificacion,
+      required this.email,
+      this.nombre})
+      : super(
+            id: id ?? database.tasasRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   DocumentReference<Object?> get ref => database.usuariosRef.doc(id);
@@ -21,6 +27,10 @@ class Usuario extends ModeloBase {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'nombre': nombre, 'email': email};
+    return {
+      'nombre': nombre,
+      'email': email,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
+    };
   }
 }

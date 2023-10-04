@@ -13,13 +13,16 @@ class Cuenta extends ModeloBase {
 
   Cuenta(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.nombre,
       required this.nombreTitular,
       required this.moneda,
       required this.numeroCuenta,
       required this.numeroIdentificacion,
       this.comision = 0})
-      : super(id: id ?? database.cuentasRef.doc().id);
+      : super(
+            id: id ?? database.cuentasRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   DocumentReference get ref => database.cuentasRef.doc(id);
@@ -45,6 +48,7 @@ class Cuenta extends ModeloBase {
       'numeroCuenta': numeroCuenta,
       'numeroIdentificacion': numeroIdentificacion,
       'comision': comision,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 

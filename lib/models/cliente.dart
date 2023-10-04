@@ -13,12 +13,15 @@ class Cliente extends ModeloBase {
 
   Cliente(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.nombre,
       required this.apellido,
       required this.cedula,
       required this.activo,
       required this.telefono})
-      : super(id: id ?? database.clientesRef.doc().id);
+      : super(
+            id: id ?? database.clientesRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   Reference get referenciaFoto {
     return storage.fotosRef.child(id);
@@ -48,7 +51,8 @@ class Cliente extends ModeloBase {
       'apellido': apellido,
       'telefono': telefono,
       'cedula': cedula,
-      'activo': activo
+      'activo': activo,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 

@@ -13,12 +13,15 @@ class Tasa extends ModeloBase {
 
   Tasa(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.nombre,
       required this.monedaEntrante,
       required this.monedaSaliente,
       required this.tasa,
       required this.tasaEntrante})
-      : super(id: id ?? database.tasasRef.doc().id);
+      : super(
+            id: id ?? database.tasasRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   DocumentReference<Object?> get ref => database.tasasRef.doc(id);
@@ -57,6 +60,7 @@ class Tasa extends ModeloBase {
       'monedaSaliente': monedaSaliente.ref,
       'tasa': tasa,
       'tasaEntrante': tasaEntrante,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 }

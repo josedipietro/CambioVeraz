@@ -12,11 +12,14 @@ class Deposito extends ModeloBase {
 
   Deposito(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.cuentaReceptora,
       required this.monto,
       required this.tasa,
       required this.fecha})
-      : super(id: id ?? database.arcasRef.doc().id);
+      : super(
+            id: id ?? database.arcasRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   DocumentReference get ref => database.arcasRef.doc(id);
@@ -41,7 +44,8 @@ class Deposito extends ModeloBase {
       'monto': monto,
       'tasa': tasa,
       'cuentaReceptora': cuentaReceptora.ref,
-      'fecha': fecha
+      'fecha': fecha,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 

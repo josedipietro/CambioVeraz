@@ -9,10 +9,13 @@ class Moneda extends ModeloBase {
 
   Moneda(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.nombre,
       required this.nombreISO,
       required this.simbolo})
-      : super(id: id ?? database.monedasRef.doc().id);
+      : super(
+            id: id ?? database.monedasRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   @override
   get ref => database.monedasRef.doc(id);
@@ -27,7 +30,12 @@ class Moneda extends ModeloBase {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'nombre': nombre, 'nombreISO': nombreISO, 'simbolo': simbolo};
+    return {
+      'nombre': nombre,
+      'nombreISO': nombreISO,
+      'simbolo': simbolo,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
+    };
   }
 
   @override

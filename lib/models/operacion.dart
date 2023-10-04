@@ -16,13 +16,16 @@ class Operacion extends ModeloBase {
 
   Operacion(
       {String? id,
+      DateTime? ultimaModificacion,
       required this.cliente,
       required this.cuentaEntrante,
       required this.cuentaSaliente,
       required this.fecha,
       required this.tasa,
       required this.monto})
-      : super(id: id ?? database.operacionesRef.doc().id);
+      : super(
+            id: id ?? database.operacionesRef.doc().id,
+            ultimaModificacion: ultimaModificacion);
 
   get referenciaComprobante {
     return storage.operacionesRef.child(id);
@@ -58,6 +61,7 @@ class Operacion extends ModeloBase {
       'fecha': fecha,
       'tasa': tasa.toJson(),
       'monto': monto,
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
 
