@@ -2,30 +2,54 @@ import 'package:cambio_veraz/models/rol.dart';
 import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cambio_veraz/providers/roles_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
-import 'package:cambio_veraz/util/createNewUser.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class NuevoUsuarioPage extends StatefulWidget {
-  static String route = '/usuarios/nuevoUsuario';
-  const NuevoUsuarioPage({super.key});
+class EditarUsuarioPage extends StatefulWidget {
+  static String route = '/usuarios/editarUsuario/:id';
+
+  final String usuarioId;
+  const EditarUsuarioPage({super.key, required this.usuarioId});
 
   @override
-  State<NuevoUsuarioPage> createState() => _NuevoUsuarioPageState();
+  State<EditarUsuarioPage> createState() => _EditarUsuarioPageState();
 }
 
-class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
+class _EditarUsuarioPageState extends State<EditarUsuarioPage> {
+  bool loading = false;
+
   TextEditingController nombreController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController passwordConfirmController = TextEditingController();
 
   bool obscurePassword = true;
 
   Rol? rolSelected;
+
+  @override
+  void initState() {
+    loading = true;
+    inicializarCampos();
+
+    super.initState();
+  }
+
+  inicializarCampos() async {
+    final usuario = await database.getUsuarioById(widget.usuarioId);
+
+    nombreController.text = usuario.nombre;
+    emailController.text = usuario.email;
+
+    setState(() {
+      loading = false;
+
+      rolSelected = usuario.rol;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,38 +82,40 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
+      child: loading
+          ? const Center(
+              child: CupertinoActivityIndicator(
+                radius: 12,
+              ),
+            )
+          : Column(
               children: [
-                buildField(context, 'Correo', emailController,
-                    maxLength: 30, type: TextInputType.emailAddress),
-                buildField(context, 'Nombre', nombreController, maxLength: 30),
-                CustomDropdown<Rol>(
-                    items: rolesProvider.roles,
-                    value: rolSelected,
-                    onChange: onRolSelected,
-                    title: 'Rol'),
-                buildField(context, 'Contraseña', passwordController,
-                    maxLength: 30,
-                    obscureText: obscurePassword,
-                    suffix: buildEyeSuffix()),
-                buildField(
-                    context, 'Confirmar contraseña', passwordConfirmController,
-                    maxLength: 30, obscureText: obscurePassword),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      buildField(context, 'Correo', emailController,
+                          maxLength: 30,
+                          type: TextInputType.emailAddress,
+                          enable: false),
+                      buildField(context, 'Nombre', nombreController,
+                          maxLength: 30),
+                      CustomDropdown<Rol>(
+                          items: rolesProvider.roles,
+                          value: rolSelected,
+                          onChange: onRolSelected,
+                          title: 'Rol'),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  width: double.infinity,
+                  height: 60,
+                  child: OutlinedButton(
+                      onPressed: agregar, child: const Text('Agregar Usuario')),
+                ),
               ],
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            width: double.infinity,
-            height: 60,
-            child: OutlinedButton(
-                onPressed: agregar, child: const Text('Agregar Usuario')),
-          ),
-        ],
-      ),
     );
   }
 
@@ -115,12 +141,14 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
       TextInputType? type,
       Widget? suffix,
       bool onlyDigits = false,
-      bool obscureText = false}) {
+      bool obscureText = false,
+      bool enable = true}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: SizedBox(
         width: 200,
         child: TextFormField(
+          enabled: enable,
           controller: controller,
           maxLength: maxLength,
           enableSuggestions: true,
@@ -156,12 +184,10 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
         rol: rolSelected!);
 
     try {
-      await createNewUser(newUsuario, passwordController.text);
-
-      await newUsuario.insert();
+      await newUsuario.update();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Usuario Agregada'),
+        content: const Text('Usuario Editado'),
       ));
 
       return NavigationService.replaceTo(Flurorouter.usuariosRoute);
@@ -169,7 +195,7 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
-        content: Text('Ha ocurrido un error al agregar.'),
+        content: Text('Ha ocurrido un error al editar.'),
       ));
     }
   }
@@ -177,8 +203,6 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
   bool validate() {
     if (nombreController.text == '') return false;
     if (emailController.text == '') return false;
-    if (passwordController.text == '') return false;
-    if (passwordConfirmController.text == '') return false;
     if (rolSelected == null) return false;
 
     return true;

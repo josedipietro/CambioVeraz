@@ -40,16 +40,18 @@ class Operacion extends ModeloBase {
       required Cuenta cuentaEntrante,
       required Cuenta cuentaSaliente}) {
     return Operacion(
-        id: snapshot.id,
-        cliente: cliente,
-        cuentaEntrante: cuentaEntrante,
-        cuentaSaliente: cuentaSaliente,
-        fecha: (snapshot.get('fecha') as Timestamp).toDate(),
-        tasa: Tasa.fromJson(
-            map: snapshot.get('tasa'),
-            monedaEntrante: cuentaEntrante.moneda,
-            monedaSaliente: cuentaSaliente.moneda),
-        monto: snapshot.get('monto'));
+      id: snapshot.id,
+      cliente: cliente,
+      cuentaEntrante: cuentaEntrante,
+      cuentaSaliente: cuentaSaliente,
+      fecha: (snapshot.get('fecha') as Timestamp).toDate(),
+      tasa: Tasa.fromJson(
+          map: snapshot.get('tasa'),
+          monedaEntrante: cuentaEntrante.moneda,
+          monedaSaliente: cuentaSaliente.moneda),
+      monto: snapshot.get('monto'),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override

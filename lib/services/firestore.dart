@@ -240,23 +240,48 @@ class _Database {
   Future<List<Usuario>> get usuarios async {
     final snapshot = await usuariosRef.get();
 
-    return snapshot.docs.map<Usuario>((e) => Usuario.fromSnapshot(e)).toList();
+    final List<Usuario> list = [];
+    for (var e in snapshot.docs) {
+      final rol = await getRolByReference(e.get('rol'));
+
+      list.add(Usuario.fromSnapshot(e, rol));
+    }
+
+    return list;
   }
 
   Future<Usuario> getUsuarioById(String id) async {
     final snapshot = await usuariosRef.doc(id).get();
+    final rol = await getRolByReference(snapshot.get('rol'));
 
-    final usuario = Usuario.fromSnapshot(snapshot);
+    final usuario = Usuario.fromSnapshot(snapshot, rol);
 
     return usuario;
   }
 
   Future<Usuario> getUsuarioByReference(DocumentReference ref) async {
     final snapshot = await usuariosRef.doc(ref.id).get();
+    final rol = await getRolByReference(snapshot.get('rol'));
 
-    final usuario = Usuario.fromSnapshot(snapshot);
+    final usuario = Usuario.fromSnapshot(snapshot, rol);
 
     return usuario;
+  }
+
+  Future<Rol> getRolById(String id) async {
+    final rolSnapshot = await rolesRef.doc(id).get();
+
+    final rol = Rol.fromSnapshot(rolSnapshot);
+
+    return rol;
+  }
+
+  Future<Rol> getRolByReference(DocumentReference ref) async {
+    final rolSnapshot = await clientesRef.doc(ref.id).get();
+
+    final rol = Rol.fromSnapshot(rolSnapshot);
+
+    return rol;
   }
 
   Future<Cliente> getClienteById(String id) async {
@@ -289,6 +314,38 @@ class _Database {
     final moneda = Moneda.fromSnapshot(monSnapshot);
 
     return moneda;
+  }
+
+  Future<Tasa> getTasaById(String id) async {
+    final tasaSnapshot = await tasasRef.doc(id).get();
+
+    final monedaEntrante =
+        await getMonedaByReference(tasaSnapshot.get('monedaEntrante'));
+    final monedaSaliente =
+        await getMonedaByReference(tasaSnapshot.get('monedaSaliente'));
+
+    final tasa = Tasa.fromSnapshot(
+        snapshot: tasaSnapshot,
+        monedaEntrante: monedaEntrante,
+        monedaSaliente: monedaSaliente);
+
+    return tasa;
+  }
+
+  Future<Tasa> getTasaByReference(DocumentReference ref) async {
+    final tasaSnapshot = await tasasRef.doc(ref.id).get();
+
+    final monedaEntrante =
+        await getMonedaByReference(tasaSnapshot.get('monedaEntrante'));
+    final monedaSaliente =
+        await getMonedaByReference(tasaSnapshot.get('monedaSaliente'));
+
+    final tasa = Tasa.fromSnapshot(
+        snapshot: tasaSnapshot,
+        monedaEntrante: monedaEntrante,
+        monedaSaliente: monedaSaliente);
+
+    return tasa;
   }
 
   Future<Cuenta> getCuentaById(String id) async {

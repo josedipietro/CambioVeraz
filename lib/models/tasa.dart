@@ -36,7 +36,8 @@ class Tasa extends ModeloBase {
         monedaEntrante: monedaEntrante,
         monedaSaliente: monedaSaliente,
         tasa: map["tasa"],
-        tasaEntrante: map['tasaEntrante']);
+        tasaEntrante: map['tasaEntrante'],
+        ultimaModificacion: map['ultimaModificacion']);
   }
 
   factory Tasa.fromSnapshot(
@@ -44,12 +45,14 @@ class Tasa extends ModeloBase {
       required Moneda monedaEntrante,
       required Moneda monedaSaliente}) {
     return Tasa(
-        id: snapshot.id,
-        nombre: snapshot.get('nombre'),
-        monedaEntrante: monedaEntrante,
-        monedaSaliente: monedaSaliente,
-        tasaEntrante: snapshot.get('tasaEntrante'),
-        tasa: snapshot.get('tasa'));
+      id: snapshot.id,
+      nombre: snapshot.get('nombre'),
+      monedaEntrante: monedaEntrante,
+      monedaSaliente: monedaSaliente,
+      tasaEntrante: snapshot.get('tasaEntrante'),
+      tasa: snapshot.get('tasa'),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override

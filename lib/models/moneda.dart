@@ -22,10 +22,12 @@ class Moneda extends ModeloBase {
 
   factory Moneda.fromSnapshot(DocumentSnapshot snapshot) {
     return Moneda(
-        id: snapshot.id,
-        nombre: snapshot.get('nombre'),
-        nombreISO: snapshot.get('nombreISO'),
-        simbolo: snapshot.get('simbolo'));
+      id: snapshot.id,
+      nombre: snapshot.get('nombre'),
+      nombreISO: snapshot.get('nombreISO'),
+      simbolo: snapshot.get('simbolo'),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override

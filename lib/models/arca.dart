@@ -31,11 +31,13 @@ class Deposito extends ModeloBase {
   factory Deposito.fromSnapshot(
       {required DocumentSnapshot snapshot, required Cuenta cuentaReceptora}) {
     return Deposito(
-        id: snapshot.id,
-        cuentaReceptora: cuentaReceptora,
-        monto: snapshot.get('monto'),
-        fecha: (snapshot.get('fecha') as Timestamp).toDate(),
-        tasa: snapshot.get('tasa'));
+      id: snapshot.id,
+      cuentaReceptora: cuentaReceptora,
+      monto: snapshot.get('monto'),
+      fecha: (snapshot.get('fecha') as Timestamp).toDate(),
+      tasa: snapshot.get('tasa'),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override

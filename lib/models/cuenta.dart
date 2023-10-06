@@ -30,13 +30,15 @@ class Cuenta extends ModeloBase {
   factory Cuenta.fromSnapshot(
       {required DocumentSnapshot snapshot, required Moneda moneda}) {
     return Cuenta(
-        id: snapshot.id,
-        nombre: snapshot.get('nombre'),
-        nombreTitular: snapshot.get('nombreTitular'),
-        moneda: moneda,
-        comision: snapshot.get('comision') ?? 0,
-        numeroCuenta: snapshot.get('numeroCuenta').toString(),
-        numeroIdentificacion: snapshot.get('numeroIdentificacion').toString());
+      id: snapshot.id,
+      nombre: snapshot.get('nombre'),
+      nombreTitular: snapshot.get('nombreTitular'),
+      moneda: moneda,
+      comision: snapshot.get('comision') ?? 0,
+      numeroCuenta: snapshot.get('numeroCuenta').toString(),
+      numeroIdentificacion: snapshot.get('numeroIdentificacion').toString(),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override

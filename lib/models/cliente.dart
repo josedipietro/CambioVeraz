@@ -36,12 +36,14 @@ class Cliente extends ModeloBase {
 
   factory Cliente.fromSnapshot(DocumentSnapshot snapshot) {
     return Cliente(
-        id: snapshot.id,
-        nombre: snapshot.get('nombre'),
-        apellido: snapshot.get('apellido'),
-        cedula: snapshot.get('cedula'),
-        activo: snapshot.get('activo'),
-        telefono: snapshot.get('telefono'));
+      id: snapshot.id,
+      nombre: snapshot.get('nombre'),
+      apellido: snapshot.get('apellido'),
+      cedula: snapshot.get('cedula'),
+      activo: snapshot.get('activo'),
+      telefono: snapshot.get('telefono'),
+      ultimaModificacion: snapshot.get('ultimaModificacion'),
+    );
   }
 
   @override
