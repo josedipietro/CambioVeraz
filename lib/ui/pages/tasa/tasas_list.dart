@@ -49,6 +49,7 @@ class _TasasListPageState extends State<TasasListPage> {
                 ),
               ),
               IconButton(
+                  tooltip: 'Monedas',
                   onPressed: () {
                     navigateTo(Flurorouter.monedasRoute);
                   },

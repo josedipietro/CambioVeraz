@@ -67,7 +67,7 @@ class _EditarUsuarioPageState extends State<EditarUsuarioPage> {
 
   buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Usuario'),
+      title: const Text('Editar Usuario'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -112,7 +112,7 @@ class _EditarUsuarioPageState extends State<EditarUsuarioPage> {
                   width: double.infinity,
                   height: 60,
                   child: OutlinedButton(
-                      onPressed: agregar, child: const Text('Agregar Usuario')),
+                      onPressed: editar, child: const Text('Editar Usuario')),
                 ),
               ],
             ),
@@ -162,15 +162,14 @@ class _EditarUsuarioPageState extends State<EditarUsuarioPage> {
               hoverColor: Theme.of(context).hoverColor,
               suffix: suffix),
           inputFormatters: <TextInputFormatter>[
-            if (onlyDigits)
-              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
           ],
         ),
       ),
     );
   }
 
-  agregar() async {
+  editar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
@@ -179,6 +178,7 @@ class _EditarUsuarioPageState extends State<EditarUsuarioPage> {
     }
 
     final newUsuario = Usuario(
+        id: widget.usuarioId,
         nombre: nombreController.text,
         email: emailController.text,
         rol: rolSelected!);

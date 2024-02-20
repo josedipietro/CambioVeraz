@@ -3,6 +3,7 @@ import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class NuevoClientePage extends StatefulWidget {
@@ -147,14 +148,16 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
         telefono: telefonoController.text);
 
     try {
-      cliente.referenciaFotoCedula.putData(cedulaFile!.bytes!);
-      cliente.referenciaFoto.putData(fotoFile!.bytes!);
+      cliente.referenciaFotoCedula.putData(
+          cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      cliente.referenciaFoto.putData(
+          fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
 
       await cliente.insert();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Cuenta Agregada'),
+        content: const Text('Cliente Agregado'),
       ));
 
       return NavigationService.replaceTo(Flurorouter.clientesRoute);

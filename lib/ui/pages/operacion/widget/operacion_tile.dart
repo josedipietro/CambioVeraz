@@ -27,6 +27,8 @@ class OperacionTile extends StatelessWidget {
         children: [
           _buildTitleAndDescription(),
           _buildMontoYTasa(),
+          _buildDetailsArea(),
+          _buildAddPhotoArea(),
           _buildRemovableArea(context),
         ],
       ),
@@ -98,6 +100,26 @@ class OperacionTile extends StatelessWidget {
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Icon(Icons.remove_circle_outline, color: Colors.red),
+      ),
+    );
+  }
+
+  Widget _buildDetailsArea() {
+    return GestureDetector(
+      onTap: () {},
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.remove_red_eye_rounded, color: Colors.blue),
+      ),
+    );
+  }
+
+  Widget _buildAddPhotoArea() {
+    return GestureDetector(
+      onTap: () {},
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.receipt, color: Colors.blue),
       ),
     );
   }

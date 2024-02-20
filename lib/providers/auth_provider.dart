@@ -1,5 +1,6 @@
 import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cambio_veraz/services/firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
@@ -16,10 +17,10 @@ class AuthProvider extends ChangeNotifier {
 
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  Usuario? get currentUser => _userFromFirebase(_firebaseAuth.currentUser);
+  User? get currentUser => _userFromFirebase(_firebaseAuth.currentUser);
   Usuario? get usuario => _usuario;
 
-  Usuario? _userFromFirebase(auth.User? user) {
+  User? _userFromFirebase(auth.User? user) {
     if (user == null) {
       authStatus = AuthStatus.notAuthenticated;
       notifyListeners();
@@ -31,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
     getUsuario(user.uid);
 
     notifyListeners();
-    return Usuario(id: user.uid, email: user.email!, nombre: user.displayName);
+    return user;
   }
 
   getUsuario(String id) async {
@@ -40,10 +41,10 @@ class AuthProvider extends ChangeNotifier {
     _usuario = user;
   }
 
-  Stream<Usuario?> get authStateChanges =>
+  Stream<User?> get authStateChanges =>
       _firebaseAuth.authStateChanges().map(_userFromFirebase);
 
-  Future<Usuario?> signInWithEmailAndPassword(
+  Future<User?> signInWithEmailAndPassword(
       {required String email, required String password}) async {
     final credential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
@@ -51,7 +52,7 @@ class AuthProvider extends ChangeNotifier {
     return _userFromFirebase(credential.user);
   }
 
-  Future<Usuario?> createUserWithEmailAndPassword(
+  Future<User?> createUserWithEmailAndPassword(
       {required String email, required String password}) async {
     final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);

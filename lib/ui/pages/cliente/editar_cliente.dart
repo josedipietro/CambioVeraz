@@ -4,6 +4,7 @@ import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -45,16 +46,21 @@ class _EditarCientePageState extends State<EditarClientePage> {
     apellidoController.text = cliente.apellido;
     cedulaController.text = cliente.cedula;
     telefonoController.text = cliente.telefono;
+    try {
+      final urlFoto = await cliente.referenciaFoto.getDownloadURL();
+      final urlFotoCedula = await cliente.referenciaFotoCedula.getDownloadURL();
 
-    final urlFoto = await cliente.referenciaFoto.getDownloadURL();
-    final urlFotoCedula = await cliente.referenciaFotoCedula.getDownloadURL();
+      setState(() {
+        fotoUrl = urlFoto;
+        fotoCedulaUrl = urlFotoCedula;
 
-    setState(() {
-      fotoUrl = urlFoto;
-      fotoCedulaUrl = urlFotoCedula;
-
-      loading = false;
-    });
+        loading = false;
+      });
+    } catch (err) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   @override
@@ -73,7 +79,7 @@ class _EditarCientePageState extends State<EditarClientePage> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Cliente'),
+      title: const Text('Editar Cliente'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -138,7 +144,7 @@ class _EditarCientePageState extends State<EditarClientePage> {
                   width: double.infinity,
                   height: 60,
                   child: OutlinedButton(
-                      onPressed: agregar, child: const Text('Agregar Cliente')),
+                      onPressed: editar, child: const Text('Editar Cliente')),
                 ),
               ],
             ),
@@ -187,7 +193,7 @@ class _EditarCientePageState extends State<EditarClientePage> {
     );
   }
 
-  agregar() async {
+  editar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
@@ -196,6 +202,7 @@ class _EditarCientePageState extends State<EditarClientePage> {
     }
 
     final cliente = Cliente(
+        id: widget.clienteId,
         nombre: nombreController.text,
         activo: true,
         apellido: apellidoController.text,
@@ -203,14 +210,16 @@ class _EditarCientePageState extends State<EditarClientePage> {
         telefono: telefonoController.text);
 
     try {
-      cliente.referenciaFotoCedula.putData(cedulaFile!.bytes!);
-      cliente.referenciaFoto.putData(fotoFile!.bytes!);
+      cliente.referenciaFotoCedula.putData(
+          cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      cliente.referenciaFoto.putData(
+          fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
 
       await cliente.update();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Cuenta Agregada'),
+        content: const Text('Cliente Editado'),
       ));
 
       return NavigationService.replaceTo(Flurorouter.clientesRoute);

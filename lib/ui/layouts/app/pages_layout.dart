@@ -23,42 +23,50 @@ class _PagesLayoutState extends State<PagesLayout> {
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarTasaRoute),
-            child: const Icon(Icons.add));
+            child:
+                const Tooltip(message: 'Agregar Tasa', child: Icon(Icons.add)));
       case Flurorouter.operacionesRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarOperacionRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Operación', child: Icon(Icons.add)));
       case Flurorouter.clientesRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarClienteRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Cliente', child: Icon(Icons.add)));
       case Flurorouter.cuentasRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarCuentaRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Cuenta', child: Icon(Icons.add)));
       case Flurorouter.monedasRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarMonedaRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Moneda', child: Icon(Icons.add)));
       case Flurorouter.usuariosRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarUsuarioRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Usuario', child: Icon(Icons.add)));
       case Flurorouter.rolesRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarRolRoute),
-            child: const Icon(Icons.add));
+            child:
+                const Tooltip(message: 'Agregar Rol', child: Icon(Icons.add)));
       case Flurorouter.depositosRoute:
         return FloatingActionButton(
             onPressed: () =>
                 NavigationService.replaceTo(Flurorouter.agregarDepositoRoute),
-            child: const Icon(Icons.add));
+            child: const Tooltip(
+                message: 'Agregar Deposito', child: Icon(Icons.add)));
       /* case UsuariosListPage:
         NavigationService.navigateTo();
         break; */

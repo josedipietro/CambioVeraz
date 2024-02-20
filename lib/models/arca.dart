@@ -25,7 +25,7 @@ class Deposito extends ModeloBase {
   DocumentReference get ref => database.arcasRef.doc(id);
 
   get referenciaComprobante {
-    return storage.arcasRef.child(id);
+    return storage.arcasRef.child('$id.png');
   }
 
   factory Deposito.fromSnapshot(
@@ -36,7 +36,7 @@ class Deposito extends ModeloBase {
       monto: snapshot.get('monto'),
       fecha: (snapshot.get('fecha') as Timestamp).toDate(),
       tasa: snapshot.get('tasa'),
-      ultimaModificacion: snapshot.get('ultimaModificacion'),
+      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
     );
   }
 

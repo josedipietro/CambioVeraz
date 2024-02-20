@@ -125,7 +125,7 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
             hoverColor: Theme.of(context).hoverColor,
             suffix: suffix),
         inputFormatters: <TextInputFormatter>[
-          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
         ],
         onChanged: onChange,
       ),

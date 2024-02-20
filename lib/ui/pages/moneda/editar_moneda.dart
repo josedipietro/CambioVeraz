@@ -31,11 +31,11 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
   }
 
   inicializarCampos() async {
-    final cliente = await database.getClienteById(widget.monedaId);
+    final moneda = await database.getMonedaById(widget.monedaId);
 
-    nombreController.text = cliente.nombre;
-    isoController.text = cliente.apellido;
-    simboloController.text = cliente.cedula;
+    nombreController.text = moneda.nombre;
+    isoController.text = moneda.nombreISO;
+    simboloController.text = moneda.simbolo;
 
     setState(() {
       loading = false;
@@ -58,7 +58,7 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
 
   buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Moneda'),
+      title: const Text('Editar Moneda'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -96,8 +96,8 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
                   width: double.infinity,
                   height: 60,
                   child: OutlinedButton(
-                      onPressed: agregarMoneda,
-                      child: const Text('Agregar Moneda')),
+                      onPressed: editarMoneda,
+                      child: const Text('Editar Moneda')),
                 ),
               ],
             ),
@@ -124,7 +124,7 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
     );
   }
 
-  agregarMoneda() async {
+  editarMoneda() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
@@ -133,6 +133,7 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
     }
 
     final moneda = Moneda(
+        id: widget.monedaId,
         nombre: nombreController.text,
         nombreISO: isoController.text,
         simbolo: simboloController.text);
@@ -149,7 +150,7 @@ class _EditarMonedaPageState extends State<EditarMonedaPage> {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
-        content: Text('Ha ocurrido un error al agregar.'),
+        content: Text('Ha ocurrido un error al editar.'),
       ));
     }
   }

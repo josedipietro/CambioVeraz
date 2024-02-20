@@ -24,11 +24,11 @@ class Cliente extends ModeloBase {
             ultimaModificacion: ultimaModificacion);
 
   Reference get referenciaFoto {
-    return storage.fotosRef.child(id);
+    return storage.fotosRef.child('$id.png');
   }
 
   Reference get referenciaFotoCedula {
-    return storage.cedulasRef.child(id);
+    return storage.cedulasRef.child('$id.png');
   }
 
   @override
@@ -42,7 +42,7 @@ class Cliente extends ModeloBase {
       cedula: snapshot.get('cedula'),
       activo: snapshot.get('activo'),
       telefono: snapshot.get('telefono'),
-      ultimaModificacion: snapshot.get('ultimaModificacion'),
+      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
     );
   }
 

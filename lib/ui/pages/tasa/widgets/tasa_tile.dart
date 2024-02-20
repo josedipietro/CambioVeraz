@@ -1,6 +1,9 @@
 import 'package:cambio_veraz/models/tasa.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TasaTile extends StatelessWidget {
   final Tasa tasa;
@@ -14,6 +17,8 @@ class TasaTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateFormat format = DateFormat.yMd('es');
+
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
@@ -25,11 +30,17 @@ class TasaTile extends StatelessWidget {
         children: [
           _buildTitleAndDescription(),
           Expanded(
-              child: tasa.tasaEntrante
+              child: Column(
+            children: [
+              tasa.tasaEntrante
                   ? Text(
                       '${tasa.monedaEntrante.simbolo}1 - ${tasa.monedaSaliente.simbolo}${tasa.tasa}')
                   : Text(
-                      '${tasa.monedaSaliente.simbolo}1 - ${tasa.monedaEntrante.simbolo}${(1 / tasa.tasa).toStringAsFixed(2)}')),
+                      '${tasa.monedaSaliente.simbolo}1 - ${tasa.monedaEntrante.simbolo}${(1 / tasa.tasa).toStringAsFixed(2)}'),
+              Text(format.format(tasa.ultimaModificacion!))
+            ],
+          )),
+          _buildEditArea(),
           _buildRemovableArea(context),
         ],
       ),
@@ -74,6 +85,31 @@ class TasaTile extends StatelessWidget {
         child: Icon(Icons.remove_circle_outline, color: Colors.red),
       ),
     );
+  }
+
+  Widget _buildEditArea() {
+    return GestureDetector(
+      onTap: () => _onEdit(),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.edit, color: Colors.blue),
+      ),
+    );
+  }
+
+  Widget _buildDetailsArea(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _onRemove(context),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.remove_circle_outline, color: Colors.red),
+      ),
+    );
+  }
+
+  void _onEdit() async {
+    NavigationService.navigateTo(
+        Flurorouter.editarTasaRoute.replaceFirst(':id', tasa.id));
   }
 
   void _onRemove(BuildContext context) async {

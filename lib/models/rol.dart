@@ -26,7 +26,7 @@ class Rol extends ModeloBase {
       nombre: snapshot.get('nombre'),
       admin: snapshot.get('admin'),
       permisos: snapshot.get('permisos'),
-      ultimaModificacion: snapshot.get('ultimaModificacion'),
+      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
     );
   }
 

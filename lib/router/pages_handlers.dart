@@ -5,16 +5,21 @@ import 'package:cambio_veraz/ui/pages/cliente/clientes_list.dart';
 import 'package:cambio_veraz/ui/pages/cliente/editar_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cliente/nuevo_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/cuentas_list.dart';
+import 'package:cambio_veraz/ui/pages/cuenta/editar_cuenta.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/nueva_cuenta.dart';
 import 'package:cambio_veraz/ui/pages/deposito/depositos_list.dart';
 import 'package:cambio_veraz/ui/pages/deposito/nuevo_deposito.dart';
 import 'package:cambio_veraz/ui/pages/login/login_page.dart';
+import 'package:cambio_veraz/ui/pages/moneda/editar_moneda.dart';
 import 'package:cambio_veraz/ui/pages/moneda/monedas_list.dart';
 import 'package:cambio_veraz/ui/pages/moneda/nueva_moneda.dart';
 import 'package:cambio_veraz/ui/pages/operacion/nueva_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/operaciones_list.dart';
+import 'package:cambio_veraz/ui/pages/tasa/editar_tasa.dart';
 import 'package:cambio_veraz/ui/pages/tasa/nueva_tasa.dart';
 import 'package:cambio_veraz/ui/pages/tasa/tasas_list.dart';
+import 'package:cambio_veraz/ui/pages/usuario/editar_usuario.dart';
+import 'package:cambio_veraz/ui/pages/usuario/nuevo_usuario.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +66,19 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const NuevaMonedaPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler editarMoneda = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarMonedaRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return EditarMonedaPage(monedaId: params["id"]![0]);
     } else {
       return const LoginPage();
     }
@@ -127,6 +145,19 @@ class PagesHandlers {
     }
   });
 
+  static Handler editarTasa = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarTasaRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return EditarTasaPage(tasaId: params["id"]![0]);
+    } else {
+      return const LoginPage();
+    }
+  });
+
   static Handler operaciones = Handler(handlerFunc: (context, params) {
     final authProvider = context!.watch<AuthProvider>();
     context
@@ -148,6 +179,20 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const NuevaOperacionPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler editarOperacion = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarOperacionRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const OperacionesListPage();
+      //return EditarOperacionPage(tasaId: params["id"]![0]);
     } else {
       return const LoginPage();
     }
@@ -177,6 +222,19 @@ class PagesHandlers {
     }
   });
 
+  static Handler editarCuenta = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarCuentaRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return EditarCuentaPage(cuentaId: params["id"]![0]);
+    } else {
+      return const LoginPage();
+    }
+  });
+
   static Handler usuarios = Handler(handlerFunc: (context, params) {
     final authProvider = context!.watch<AuthProvider>();
     context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.usuariosRoute);
@@ -195,7 +253,20 @@ class PagesHandlers {
         .setCurrentPageUrl(Flurorouter.agregarUsuarioRoute);
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
-      return Container();
+      return const NuevoUsuarioPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler editarUsuario = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarUsuarioRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return EditarUsuarioPage(usuarioId: params["id"]![0]);
     } else {
       return const LoginPage();
     }
@@ -225,6 +296,18 @@ class PagesHandlers {
     }
   });
 
+  static Handler editarRol = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.editarRolRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return Container();
+      //return EditarRolPage(rolId: params["id"]![0]);
+    } else {
+      return const LoginPage();
+    }
+  });
+
   static Handler depositos = Handler(handlerFunc: (context, params) {
     final authProvider = context!.watch<AuthProvider>();
     context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.depositosRoute);
@@ -244,6 +327,20 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const NuevoDepositoPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler editarDeposito = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.editarDepositoRoute);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return Container();
+      //return EditarDepositoPage(depositoId: params["id"]![0]);
     } else {
       return const LoginPage();
     }

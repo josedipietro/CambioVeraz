@@ -28,7 +28,7 @@ class Operacion extends ModeloBase {
             ultimaModificacion: ultimaModificacion);
 
   get referenciaComprobante {
-    return storage.operacionesRef.child(id);
+    return storage.operacionesRef.child('$id.png');
   }
 
   @override
@@ -50,7 +50,7 @@ class Operacion extends ModeloBase {
           monedaEntrante: cuentaEntrante.moneda,
           monedaSaliente: cuentaSaliente.moneda),
       monto: snapshot.get('monto'),
-      ultimaModificacion: snapshot.get('ultimaModificacion'),
+      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
     );
   }
 

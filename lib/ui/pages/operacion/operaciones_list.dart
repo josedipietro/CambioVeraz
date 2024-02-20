@@ -51,6 +51,7 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
               Row(
                 children: [
                   IconButton(
+                      tooltip: 'Depositos',
                       onPressed: () {
                         navigateTo(Flurorouter.depositosRoute);
                       },
@@ -62,6 +63,7 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
                     width: 8,
                   ),
                   IconButton(
+                      tooltip: 'Cuentas',
                       onPressed: () {
                         navigateTo(Flurorouter.cuentasRoute);
                       },

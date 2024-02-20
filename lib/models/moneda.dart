@@ -26,7 +26,7 @@ class Moneda extends ModeloBase {
       nombre: snapshot.get('nombre'),
       nombreISO: snapshot.get('nombreISO'),
       simbolo: snapshot.get('simbolo'),
-      ultimaModificacion: snapshot.get('ultimaModificacion'),
+      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
     );
   }
 

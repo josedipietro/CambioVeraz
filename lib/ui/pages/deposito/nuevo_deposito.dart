@@ -8,6 +8,7 @@ import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -185,7 +186,7 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
             hoverColor: Theme.of(context).hoverColor,
             suffix: suffix),
         inputFormatters: <TextInputFormatter>[
-          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
         ],
         onChanged: onChange,
       ),
@@ -228,7 +229,8 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
         tasa: tasa);
 
     try {
-      deposito.referenciaComprobante.putData(comprobanteFile!.bytes!);
+      deposito.referenciaComprobante.putData(
+          comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
 
       await deposito.insert();
 

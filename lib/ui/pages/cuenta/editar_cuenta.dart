@@ -67,7 +67,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
 
   buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Cuenta'),
+      title: const Text('Editar Cuenta'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -126,7 +126,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
                   width: double.infinity,
                   height: 60,
                   child: OutlinedButton(
-                      onPressed: agregar, child: const Text('Agregar Cuenta')),
+                      onPressed: editar, child: const Text('Editar Cuenta')),
                 ),
               ],
             ),
@@ -160,14 +160,14 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
             hoverColor: Theme.of(context).hoverColor,
             suffix: suffix),
         inputFormatters: <TextInputFormatter>[
-          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+          if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
         ],
         onChanged: onChange,
       ),
     );
   }
 
-  agregar() async {
+  editar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
@@ -176,6 +176,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
     }
 
     final cuenta = Cuenta(
+        id: widget.cuentaId,
         nombre: nombreController.text,
         moneda: monedaSelected!,
         nombreTitular: nombreTitularController.text,
@@ -195,7 +196,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
-        content: Text('Ha ocurrido un error al agregar.'),
+        content: Text('Ha ocurrido un error al editar.'),
       ));
     }
   }

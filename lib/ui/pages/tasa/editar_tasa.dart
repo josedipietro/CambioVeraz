@@ -5,6 +5,7 @@ import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,7 +47,7 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
 
     nombreController.text = tasa.nombre;
     double montoTasa;
-    if (tasa.tasaEntrante) {
+    if (!tasa.tasaEntrante) {
       montoTasa = 1 / tasa.tasa;
     } else {
       montoTasa = tasa.tasa;
@@ -79,7 +80,7 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
 
   buildAppBar() {
     return AppBar(
-      title: const Text('Agregar Tasa'),
+      title: const Text('Editar Tasa'),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
@@ -109,12 +110,16 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
                           maxLength: 30),
                       CustomDropdown<Moneda>(
                           items: monedasProvider.monedas,
-                          value: monedaEntranteSelected,
+                          value: monedasProvider.monedas.firstWhereOrNull(
+                              (element) =>
+                                  element.id == monedaEntranteSelected?.id),
                           onChange: onMonedaEntranteSelected,
                           title: 'Moneda Entrante'),
                       CustomDropdown<Moneda>(
                           items: monedasProvider.monedas,
-                          value: monedaSalienteSelected,
+                          value: monedasProvider.monedas.firstWhereOrNull(
+                              (element) =>
+                                  element.id == monedaSalienteSelected?.id),
                           onChange: onMonedaSalienteSelected,
                           title: 'Moneda Saliente'),
                       if (monedaSalienteSelected != null)
@@ -136,13 +141,18 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
                                 }
                               },
                             ),
-                            Switch(
-                                value: tasaEntrante,
-                                onChanged: (value) {
-                                  setState(() {
-                                    tasaEntrante = value;
-                                  });
-                                })
+                            Column(
+                              children: [
+                                const Text('Invertir tasa'),
+                                Switch(
+                                    value: tasaEntrante,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        tasaEntrante = value;
+                                      });
+                                    }),
+                              ],
+                            )
                           ],
                         ),
                       if (monedaSalienteSelected != null &&
@@ -156,7 +166,7 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
                   width: double.infinity,
                   height: 60,
                   child: OutlinedButton(
-                      onPressed: agregar, child: const Text('Agregar Tasa')),
+                      onPressed: editar, child: const Text('Editar Tasa')),
                 ),
               ],
             ),
@@ -215,15 +225,14 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
               hoverColor: Theme.of(context).hoverColor,
               suffix: suffix),
           inputFormatters: <TextInputFormatter>[
-            if (onlyDigits)
-              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
           ],
         ),
       ),
     );
   }
 
-  agregar() async {
+  editar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
@@ -234,6 +243,7 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
     final tasaConverted = tasaEntrante ? tasa : 1 / tasa;
 
     final newTasa = Tasa(
+        id: widget.tasaId,
         nombre: nombreController.text,
         monedaEntrante: monedaEntranteSelected!,
         monedaSaliente: monedaSalienteSelected!,
@@ -252,7 +262,7 @@ class _EditarTasaPageState extends State<EditarTasaPage> {
       print(err);
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         backgroundColor: Colors.red,
-        content: Text('Ha ocurrido un error al agregar.'),
+        content: Text('Ha ocurrido un error al editar.'),
       ));
     }
   }

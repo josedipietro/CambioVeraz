@@ -10,7 +10,7 @@ createNewUser(Usuario usuario, String password) async {
   FirebaseAuth auth = FirebaseAuth.instanceFor(app: auxApp);
 
   await auth.createUserWithEmailAndPassword(
-    email: usuario.email!,
+    email: usuario.email,
     password: password,
   );
 }

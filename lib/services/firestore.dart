@@ -277,7 +277,7 @@ class _Database {
   }
 
   Future<Rol> getRolByReference(DocumentReference ref) async {
-    final rolSnapshot = await clientesRef.doc(ref.id).get();
+    final rolSnapshot = await rolesRef.doc(ref.id).get();
 
     final rol = Rol.fromSnapshot(rolSnapshot);
 

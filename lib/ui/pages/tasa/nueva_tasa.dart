@@ -93,13 +93,18 @@ class _NuevaTasaPageState extends State<NuevaTasaPage> {
                           }
                         },
                       ),
-                      Switch(
-                          value: tasaEntrante,
-                          onChanged: (value) {
-                            setState(() {
-                              tasaEntrante = value;
-                            });
-                          })
+                      Column(
+                        children: [
+                          const Text('Invertir tasa'),
+                          Switch(
+                              value: tasaEntrante,
+                              onChanged: (value) {
+                                setState(() {
+                                  tasaEntrante = value;
+                                });
+                              }),
+                        ],
+                      )
                     ],
                   ),
                 if (monedaSalienteSelected != null &&
@@ -172,8 +177,7 @@ class _NuevaTasaPageState extends State<NuevaTasaPage> {
               hoverColor: Theme.of(context).hoverColor,
               suffix: suffix),
           inputFormatters: <TextInputFormatter>[
-            if (onlyDigits)
-              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
           ],
         ),
       ),

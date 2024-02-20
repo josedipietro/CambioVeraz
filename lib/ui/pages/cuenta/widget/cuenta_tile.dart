@@ -1,4 +1,6 @@
 import 'package:cambio_veraz/models/cuenta.dart';
+import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -49,6 +51,7 @@ class CuentaTile extends StatelessWidget {
               Text('${cuenta.moneda.simbolo}$balance'),
             ],
           )),
+          _buildEditArea(),
           _buildRemovableArea(context),
         ],
       ),
@@ -93,6 +96,31 @@ class CuentaTile extends StatelessWidget {
         child: Icon(Icons.remove_circle_outline, color: Colors.red),
       ),
     );
+  }
+
+  Widget _buildEditArea() {
+    return GestureDetector(
+      onTap: () => _onEdit(),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.edit, color: Colors.blue),
+      ),
+    );
+  }
+
+  Widget _buildDetailsArea(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _onRemove(context),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Icon(Icons.remove_circle_outline, color: Colors.red),
+      ),
+    );
+  }
+
+  void _onEdit() async {
+    NavigationService.navigateTo(
+        Flurorouter.editarCuentaRoute.replaceFirst(':id', cuenta.id));
   }
 
   void _onRemove(BuildContext context) async {

@@ -134,8 +134,7 @@ class _NuevoUsuarioPageState extends State<NuevoUsuarioPage> {
               hoverColor: Theme.of(context).hoverColor,
               suffix: suffix),
           inputFormatters: <TextInputFormatter>[
-            if (onlyDigits)
-              FilteringTextInputFormatter.allow(RegExp('[0-9.,]')),
+            if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
           ],
         ),
       ),

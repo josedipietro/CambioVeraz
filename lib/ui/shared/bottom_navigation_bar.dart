@@ -91,53 +91,41 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           }
           navigateTo(routeName);
         },
-        items: [
-          Container(
-            child: Column(
-              children: const [
-                Icon(
-                  Icons.bar_chart_rounded,
-                  color: Colors.white,
-                ),
-                Text('Tasas')
-              ],
+        items: const [
+          Tooltip(
+            message: 'Tasas',
+            child: Icon(
+              Icons.bar_chart_rounded,
+              color: Colors.white,
             ),
           ),
-          Column(
-            children: const [
-              Icon(
-                Icons.assignment,
-                color: Colors.white,
-              ),
-              Text('Operaciones')
-            ],
+          Tooltip(
+            message: 'Operaciones',
+            child: Icon(
+              Icons.assignment,
+              color: Colors.white,
+            ),
           ),
-          Column(
-            children: const [
-              Icon(
-                Icons.home_rounded,
-                color: Colors.white,
-              ),
-              Text('Inicio')
-            ],
+          Tooltip(
+            message: 'Inicio',
+            child: Icon(
+              Icons.home_rounded,
+              color: Colors.white,
+            ),
           ),
-          Column(
-            children: const [
-              Icon(
-                Icons.person_pin_rounded,
-                color: Colors.white,
-              ),
-              Text('Clientes')
-            ],
+          Tooltip(
+            message: 'Clientes',
+            child: Icon(
+              Icons.person_pin_rounded,
+              color: Colors.white,
+            ),
           ),
-          Column(
-            children: const [
-              Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-              Text('Usuarios')
-            ],
+          Tooltip(
+            message: 'Usuarios',
+            child: Icon(
+              Icons.person,
+              color: Colors.white,
+            ),
           ),
         ]);
   }
