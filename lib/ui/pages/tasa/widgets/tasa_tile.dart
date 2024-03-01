@@ -37,7 +37,7 @@ class TasaTile extends StatelessWidget {
                       '${tasa.monedaEntrante.simbolo}1 - ${tasa.monedaSaliente.simbolo}${tasa.tasa}')
                   : Text(
                       '${tasa.monedaSaliente.simbolo}1 - ${tasa.monedaEntrante.simbolo}${(1 / tasa.tasa).toStringAsFixed(2)}'),
-              Text(format.format(tasa.ultimaModificacion!))
+              Text(format.format(tasa.ultimaModificacion ?? DateTime.now()))
             ],
           )),
           _buildEditArea(),

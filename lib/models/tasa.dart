@@ -35,9 +35,9 @@ class Tasa extends ModeloBase {
         nombre: map['nombre'],
         monedaEntrante: monedaEntrante,
         monedaSaliente: monedaSaliente,
-        tasa: map["tasa"],
+        tasa: map['tasa'],
         tasaEntrante: map['tasaEntrante'],
-        ultimaModificacion: map['ultimaModificacion']);
+        ultimaModificacion: map['ultimaModificacion'].toDate());
   }
 
   factory Tasa.fromSnapshot(
