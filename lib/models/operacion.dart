@@ -50,7 +50,9 @@ class Operacion extends ModeloBase {
           monedaEntrante: cuentaEntrante.moneda,
           monedaSaliente: cuentaSaliente.moneda),
       monto: snapshot.get('monto'),
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 

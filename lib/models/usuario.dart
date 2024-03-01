@@ -27,7 +27,9 @@ class Usuario extends ModeloBase {
       email: snapshot.get('email'),
       nombre: snapshot.get('nombre'),
       rol: rol,
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 

@@ -15,7 +15,8 @@ class LoginPage extends StatelessWidget {
 
     iniciarSesion() async {
       await authProvider.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
+          email: emailController.text.toLowerCase(),
+          password: passwordController.text);
     }
 
     return Column(

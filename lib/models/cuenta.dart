@@ -37,7 +37,9 @@ class Cuenta extends ModeloBase {
       comision: snapshot.get('comision') ?? 0,
       numeroCuenta: snapshot.get('numeroCuenta').toString(),
       numeroIdentificacion: snapshot.get('numeroIdentificacion').toString(),
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 

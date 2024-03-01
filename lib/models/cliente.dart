@@ -42,7 +42,9 @@ class Cliente extends ModeloBase {
       cedula: snapshot.get('cedula'),
       activo: snapshot.get('activo'),
       telefono: snapshot.get('telefono'),
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 

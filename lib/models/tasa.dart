@@ -51,7 +51,9 @@ class Tasa extends ModeloBase {
       monedaSaliente: monedaSaliente,
       tasaEntrante: snapshot.get('tasaEntrante'),
       tasa: snapshot.get('tasa'),
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 

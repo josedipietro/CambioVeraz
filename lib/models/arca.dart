@@ -36,7 +36,9 @@ class Deposito extends ModeloBase {
       monto: snapshot.get('monto'),
       fecha: (snapshot.get('fecha') as Timestamp).toDate(),
       tasa: snapshot.get('tasa'),
-      ultimaModificacion: snapshot.get('ultimaModificacion').toDate(),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
     );
   }
 
