@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class ClientesProvider extends ChangeNotifier {
   ClientesProvider() {
-    getclientes();
+    getclientes('');
   }
 
   List<Cliente> _clientes = [];
@@ -19,11 +19,11 @@ class ClientesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getclientes() async {
+  getclientes(String search) async {
     _loading = true;
     notifyListeners();
 
-    database.clientesStream.listen((event) {
+    database.getclientesStream(search).listen((event) async {
       _clientes = event;
       _loading = false;
       notifyListeners();

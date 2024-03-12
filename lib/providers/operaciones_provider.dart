@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class OperacionesProvider extends ChangeNotifier {
   OperacionesProvider() {
-    getoperaciones();
+    getoperaciones('');
   }
 
   List<Operacion> _operaciones = [];
@@ -19,11 +19,11 @@ class OperacionesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getoperaciones() async {
+  getoperaciones(String search) async {
     _loading = true;
     notifyListeners();
 
-    database.operacionesStream.listen((event) async {
+    database.getoperacionesStream(search).listen((event) async {
       _operaciones = await event;
       _loading = false;
       notifyListeners();

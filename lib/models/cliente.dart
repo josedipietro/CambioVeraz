@@ -37,7 +37,7 @@ class Cliente extends ModeloBase {
   factory Cliente.fromSnapshot(DocumentSnapshot snapshot) {
     return Cliente(
       id: snapshot.id,
-      nombre: snapshot.get('nombre'),
+      nombre:  snapshot.get('nombre'),
       apellido: snapshot.get('apellido'),
       cedula: snapshot.get('cedula'),
       activo: snapshot.get('activo'),

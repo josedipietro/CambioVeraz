@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class TasasProvider extends ChangeNotifier {
   TasasProvider() {
-    getTasas();
+    getTasas('');
   }
 
   List<Tasa> _tasas = [];
@@ -19,11 +19,11 @@ class TasasProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getTasas() async {
+  getTasas(String search) async {
     _loading = true;
     notifyListeners();
 
-    database.tasasStream.listen((event) async {
+    database.gettasasStream(search).listen((event) async {
       _tasas = await event;
       _loading = false;
       notifyListeners();

@@ -54,7 +54,7 @@ class _Database {
     return operaciones;
   }
 
-  Stream<Future<List<Operacion>>> get operacionesStream {
+  Stream<Future<List<Operacion>>> getoperacionesStream(String search) {
     return operacionesRef
         .orderBy('fecha', descending: true)
         .snapshots()
@@ -68,20 +68,30 @@ class _Database {
         final cuentaSaliente =
             await getCuentaByReference(e.get('cuentaSaliente'));
 
-        operaciones.add(Operacion.fromSnapshot(
-          snapshot: e,
-          cliente: cliente,
-          cuentaEntrante: cuentaEntrante,
-          cuentaSaliente: cuentaSaliente,
-        ));
+        if (containsIgnoreCase(cliente.nombre, search)) {
+          operaciones.add(Operacion.fromSnapshot(
+            snapshot: e,
+            cliente: cliente,
+            cuentaEntrante: cuentaEntrante,
+            cuentaSaliente: cuentaSaliente,
+          ));
+        }
       }
 
       return operaciones;
     });
   }
 
+  bool containsIgnoreCase(String haystack, String needle) {
+    final String lowerCaseHaystack = haystack.toLowerCase();
+    final String lowerCaseNeedle = needle.toLowerCase();
+
+    return lowerCaseHaystack.contains(lowerCaseNeedle);
+  }
+
   Future<List<Cliente>> get clientes async {
-    final cliSnapshot = await clientesRef.get();
+    final cliSnapshot =
+        await clientesRef.where('nombre', isEqualTo: 'CARLOS EDUARDO ').get();
 
     final List<Cliente> clientes =
         cliSnapshot.docs.map((e) => Cliente.fromSnapshot(e)).toList();
@@ -89,19 +99,21 @@ class _Database {
     return clientes;
   }
 
-  Stream<List<Cliente>> get clientesStream {
+  Stream<List<Cliente>> getclientesStream(String search) {
     return clientesRef
-        .orderBy('nombre', descending: true)
+        .orderBy('nombre')
+        .startAt([search.toUpperCase()])
+        .endAt(["$search\uf8ff".toUpperCase()])
         .snapshots()
         .map((opSnapshot) {
-      final List<Cliente> operaciones = [];
+          final List<Cliente> operaciones = [];
 
-      for (var e in opSnapshot.docs) {
-        operaciones.add(Cliente.fromSnapshot(e));
-      }
+          for (var e in opSnapshot.docs) {
+            operaciones.add(Cliente.fromSnapshot(e));
+          }
 
-      return operaciones;
-    });
+          return operaciones;
+        });
   }
 
   Future<List<Cuenta>> get cuentas async {
@@ -176,24 +188,29 @@ class _Database {
     return list;
   }
 
-  Stream<Future<List<Tasa>>> get tasasStream {
-    return tasasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
-      final List<Tasa> operaciones = [];
+  Stream<Future<List<Tasa>>> gettasasStream(String search) {
+    return tasasRef
+        .orderBy('nombre')
+        .startAt([search.toUpperCase()])
+        .endAt(["$search\uf8ff".toUpperCase()])
+        .snapshots()
+        .map((opSnapshot) async {
+          final List<Tasa> operaciones = [];
 
-      for (var e in opSnapshot.docs) {
-        final monedaEntrante =
-            await getMonedaByReference(e.get('monedaEntrante'));
-        final monedaSaliente =
-            await getMonedaByReference(e.get('monedaSaliente'));
+          for (var e in opSnapshot.docs) {
+            final monedaEntrante =
+                await getMonedaByReference(e.get('monedaEntrante'));
+            final monedaSaliente =
+                await getMonedaByReference(e.get('monedaSaliente'));
 
-        operaciones.add(Tasa.fromSnapshot(
-            snapshot: e,
-            monedaEntrante: monedaEntrante,
-            monedaSaliente: monedaSaliente));
-      }
+            operaciones.add(Tasa.fromSnapshot(
+                snapshot: e,
+                monedaEntrante: monedaEntrante,
+                monedaSaliente: monedaSaliente));
+          }
 
-      return operaciones;
-    });
+          return operaciones;
+        });
   }
 
   Future<List<Deposito>> get arcas async {

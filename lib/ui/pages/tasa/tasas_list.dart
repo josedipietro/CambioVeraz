@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/providers/tasas_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
@@ -18,9 +20,18 @@ class TasasListPage extends StatefulWidget {
 
 class _TasasListPageState extends State<TasasListPage> {
   final TextEditingController buscadorController = TextEditingController();
-
+  Timer? _debounce;
   navigateTo(String route) {
     NavigationService.navigateTo(route);
+  }
+
+  @override
+  _onSearchChanged(String query, TasasProvider tasasProvider) {
+    print(query);
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      tasasProvider.getTasas(query);
+    });
   }
 
   @override
@@ -59,7 +70,7 @@ class _TasasListPageState extends State<TasasListPage> {
                   ))
             ],
           ),
-          buildBuscador(context),
+          buildBuscador(context, tasasProvider),
           !tasasProvider.loading
               ? buildList(context, tasasProvider.tasas)
               : const Center(child: CupertinoActivityIndicator()),
@@ -68,13 +79,14 @@ class _TasasListPageState extends State<TasasListPage> {
     );
   }
 
-  buildBuscador(BuildContext context) {
+  buildBuscador(BuildContext context, TasasProvider tasasProvider) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         child: TextField(
           controller: buscadorController,
           maxLength: 30,
           enableSuggestions: true,
+          onChanged: ((value) => _onSearchChanged(value, tasasProvider)),
           decoration: InputDecoration(
             labelText: 'Buscar...',
             floatingLabelBehavior: FloatingLabelBehavior.auto,

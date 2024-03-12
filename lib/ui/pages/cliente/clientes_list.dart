@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/providers/clientes_provider.dart';
 import 'package:cambio_veraz/ui/pages/cliente/widget/cliente_tile.dart';
@@ -16,13 +18,21 @@ class ClientesListPage extends StatefulWidget {
 
 class _ClientesListPageState extends State<ClientesListPage> {
   final TextEditingController buscadorController = TextEditingController();
-
+  Timer? _debounce;
   @override
   Widget build(BuildContext context) {
     print('clientes list');
     final clientesProvider = context.watch<ClientesProvider>();
 
     return buildBody(context, clientesProvider);
+  }
+
+  _onSearchChanged(String query, ClientesProvider clientesProvider) {
+    print(query);
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      clientesProvider.getclientes(query);
+    });
   }
 
   buildBody(BuildContext context, ClientesProvider clientesProvider) {
@@ -38,7 +48,7 @@ class _ClientesListPageState extends State<ClientesListPage> {
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
             ),
           ),
-          buildBuscador(context),
+          buildBuscador(context, clientesProvider),
           !clientesProvider.loading
               ? buildList(context, clientesProvider.clientes)
               : const Center(child: CupertinoActivityIndicator()),
@@ -47,13 +57,14 @@ class _ClientesListPageState extends State<ClientesListPage> {
     );
   }
 
-  buildBuscador(BuildContext context) {
+  buildBuscador(BuildContext context, ClientesProvider clientesProvider) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         child: TextField(
           controller: buscadorController,
           maxLength: 30,
           enableSuggestions: true,
+          onChanged: (value) => {_onSearchChanged(value, clientesProvider)},
           decoration: InputDecoration(
             labelText: 'Buscar...',
             floatingLabelBehavior: FloatingLabelBehavior.auto,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/providers/operaciones_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
@@ -18,7 +20,7 @@ class OperacionesListPage extends StatefulWidget {
 
 class _OperacionesListPageState extends State<OperacionesListPage> {
   final TextEditingController buscadorController = TextEditingController();
-
+  Timer? _debounce;
   navigateTo(String route) {
     NavigationService.navigateTo(route);
   }
@@ -75,7 +77,7 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
               )
             ],
           ),
-          buildBuscador(context),
+          buildBuscador(context, operacionsProvider),
           !operacionsProvider.loading
               ? buildList(context, operacionsProvider.operaciones)
               : const Center(child: CupertinoActivityIndicator()),
@@ -84,13 +86,22 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
     );
   }
 
-  buildBuscador(BuildContext context) {
+  _onSearchChanged(String query, OperacionesProvider operacionsProvider) {
+    print(query);
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      operacionsProvider.getoperaciones(query);
+    });
+  }
+
+  buildBuscador(BuildContext context, OperacionesProvider operacionsProvider) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         child: TextField(
           controller: buscadorController,
           maxLength: 30,
           enableSuggestions: true,
+          onChanged: ((value) => {_onSearchChanged(value, operacionsProvider)}),
           decoration: InputDecoration(
             labelText: 'Buscar...',
             floatingLabelBehavior: FloatingLabelBehavior.auto,
