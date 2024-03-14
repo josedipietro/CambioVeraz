@@ -1,6 +1,7 @@
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/modelo_base.dart';
+import 'package:cambio_veraz/models/movimientos.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/storage.dart';
@@ -13,16 +14,18 @@ class Operacion extends ModeloBase {
   double monto;
   Tasa tasa;
   DateTime fecha;
+  List<Movimientos> movimimentos;
 
   Operacion(
       {String? id,
       DateTime? ultimaModificacion,
       required this.cliente,
       required this.cuentaEntrante,
-      required this.cuentaSaliente,
       required this.fecha,
       required this.tasa,
-      required this.monto})
+      required this.cuentaSaliente,
+      required this.monto,
+      required this.movimimentos})
       : super(
             id: id ?? database.operacionesRef.doc().id,
             ultimaModificacion: ultimaModificacion);
@@ -41,9 +44,9 @@ class Operacion extends ModeloBase {
       required Cuenta cuentaSaliente}) {
     return Operacion(
       id: snapshot.id,
+      cuentaSaliente: cuentaSaliente,
       cliente: cliente,
       cuentaEntrante: cuentaEntrante,
-      cuentaSaliente: cuentaSaliente,
       fecha: (snapshot.get('fecha') as Timestamp).toDate(),
       tasa: Tasa.fromJson(
           map: snapshot.get('tasa'),
@@ -53,6 +56,7 @@ class Operacion extends ModeloBase {
       ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
           ? snapshot.get('ultimaModificacion').toDate()
           : null,
+      movimimentos: [],
     );
   }
 
@@ -65,8 +69,17 @@ class Operacion extends ModeloBase {
       'fecha': fecha,
       'tasa': tasa.toJson(),
       'monto': monto,
-      'ultimaModificacion': ultimaModificacion ?? DateTime.now()
+      'ultimaModificacion': ultimaModificacion ?? DateTime.now(),
     };
+  }
+
+  @override
+  Future insert() async {
+    await super.insert();
+    for (var movimiento in movimimentos) {
+      movimiento.idOperacion = id;
+      await movimiento.insert();
+    }
   }
 
   @override

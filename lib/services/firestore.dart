@@ -395,8 +395,8 @@ class _Database {
     final operacionesRecibe = operacionesList
         .where((element) => element.cuentaEntrante.id == cuenta.id);
 
-    final operacionesEnvia = operacionesList
-        .where((element) => element.cuentaSaliente.id == cuenta.id);
+    //final operacionesEnvia = operacionesList
+    //    .where((element) => element.cuentaSaliente.id == cuenta.id);
 
     double balance = 0;
 
@@ -408,9 +408,9 @@ class _Database {
       balance += element.monto;
     }
 
-    for (var element in operacionesEnvia) {
-      balance -= element.monto * element.tasa.tasa;
-    }
+    //for (var element in operacionesEnvia) {
+    //  balance -= element.monto * element.tasa.tasa;
+    //}
 
     return balance;
   }

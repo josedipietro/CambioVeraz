@@ -1,6 +1,7 @@
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
+import 'package:cambio_veraz/models/movimientos.dart';
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/providers/clientes_provider.dart';
@@ -28,17 +29,15 @@ class NuevaOperacionPage extends StatefulWidget {
 
 class _NuevaCientePageState extends State<NuevaOperacionPage> {
   Cliente? clienteSelected;
-
+  List<Movimientos> movimientos = [];
   Moneda? monedaEntranteSelected;
   Moneda? monedaSalienteSelected;
 
   Tasa? tasaSelected;
 
   Cuenta? cuentaEntranteSelected;
+  List<Cuenta> cuentasSalientesSelected = [];
   Cuenta? cuentaSalienteSelected;
-
-  TextEditingController montoController = TextEditingController(text: '0');
-
   PlatformFile? comprobanteFile;
 
   List<Tasa> tasas = [];
@@ -114,27 +113,53 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                       value: monedaSalienteSelected,
                       onChange: onMonedaSalienteSelected,
                       title: 'Moneda Saliente'),
-                if (monedaSalienteSelected != null)
-                  CustomDropdown<Cuenta>(
-                      items: cuentasProvider.cuentas
-                          .where((element) =>
-                              element.moneda.nombreISO ==
-                              monedaSalienteSelected!.nombreISO)
-                          .toList(),
-                      value: cuentaSalienteSelected,
-                      onChange: onCuentaSalienteSelected,
-                      title: 'Cuenta Saliente'),
-                if (cuentaEntranteSelected != null)
-                  buildField(context, 'Monto', montoController,
-                      maxLength: 30,
-                      type: TextInputType.number,
-                      suffix: Text(cuentaEntranteSelected!.moneda.simbolo),
-                      onlyDigits: true),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: movimientos.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final movimiento = movimientos[index];
+                    return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return Column(
+                          children: [
+                            CustomDropdown<Cuenta>(
+                              items: cuentasProvider.cuentas
+                                  .where((element) =>
+                                      element.moneda.nombreISO ==
+                                      monedaSalienteSelected!.nombreISO)
+                                  .toList(),
+                              value: movimiento.cuentaSaliente,
+                              onChange: (Cuenta? cuenta) {
+                                setState(() {
+                                  onChangeMovimiento(index, cuenta);
+                                });
+                              },
+                              title: 'Cuenta Saliente',
+                            ),
+                            buildField(context, 'Monto', movimiento.monto,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: Text(
+                                    cuentaEntranteSelected!.moneda.simbolo),
+                                onlyDigits: true),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
                 buildUploadFileButton('Subir Comprobante', (file) {
                   comprobanteFile = file;
                   NotificationsService.showSnackbar(
                       'Comprobante ${file.name} cargado');
                 }),
+                if (monedaSalienteSelected != null)
+                  ElevatedButton(
+                      onPressed: () => {
+                            agregarOperacion(
+                                cuentasProvider, cuentaEntranteSelected)
+                          },
+                      child: const Text('Agregar operacion')),
                 if (tasaSelected != null) buildOperacionTasaPreview(),
               ],
             ),
@@ -153,6 +178,31 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     );
   }
 
+  void agregarOperacion(cuentasProvider, cuentaEntranteSelected) {
+    setState(() {
+      movimientos.add(Movimientos(
+          idOperacion: '1',
+          cuentaEntrante: cuentaEntranteSelected,
+          cuentaSaliente: null,
+          monto: TextEditingController(text: '0')));
+    });
+  }
+
+  double sumarMontos(List<Movimientos> movimientos) {
+    double total = 0.0;
+    for (var movimiento in movimientos) {
+      double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
+      total += monto;
+    }
+    return total;
+  }
+
+  onChangeMovimiento(index, cuenta) {
+    setState(() {
+      movimientos[index].cuentaSaliente = cuenta;
+    });
+  }
+
   onClienteSelected(Cliente? cliente) {
     setState(() {
       clienteSelected = cliente;
@@ -162,23 +212,23 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   onMonedaEntranteSelected(Moneda? moneda) {
     setState(() {
       monedaEntranteSelected = moneda;
-
       cuentaEntranteSelected = null;
       monedaSalienteSelected = null;
-      cuentaSalienteSelected = null;
+      cuentasSalientesSelected = [];
+      movimientos = [];
     });
   }
 
   onMonedaSalienteSelected(Moneda? moneda) {
-    print(tasas);
     final tasa = tasas.firstWhereOrNull((element) =>
         element.monedaEntrante.nombreISO == monedaEntranteSelected!.nombreISO &&
         element.monedaSaliente.nombreISO == moneda!.nombreISO);
-    print(tasa);
 
     setState(() {
       monedaSalienteSelected = moneda;
       tasaSelected = tasa;
+      cuentasSalientesSelected = [];
+      movimientos = [];
     });
   }
 
@@ -188,10 +238,12 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     });
   }
 
-  onCuentaSalienteSelected(Cuenta? cuenta) {
-    setState(() {
-      cuentaSalienteSelected = cuenta;
-    });
+  Function(Cuenta?) onCuentaSalienteSelected(List<Cuenta> cuentas) {
+    return (Cuenta? cuenta) {
+      setState(() {
+        cuentasSalientesSelected = cuentas;
+      });
+    };
   }
 
   Widget buildOperacionTasaPreview() {
@@ -272,11 +324,12 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     }
 
     final operacion = Operacion(
+        cuentaSaliente: movimientos[0].cuentaSaliente!,
         cliente: clienteSelected!,
         cuentaEntrante: cuentaEntranteSelected!,
-        cuentaSaliente: cuentaSalienteSelected!,
+        movimimentos: movimientos,
         fecha: DateTime.now(),
-        monto: double.parse(montoController.text),
+        monto: sumarMontos(movimientos),
         tasa: tasaSelected!);
 
     try {
@@ -309,8 +362,10 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
       return false;
     }
 
-    if (cuentaSalienteSelected == null) return false;
-    if (montoController.text == '' || montoController.text == '0') return false;
+    if (cuentasSalientesSelected == null) return false;
+    for (var movimiento in movimientos) {
+      if (movimiento.monto.text == '0') return false;
+    }
 
     if (comprobanteFile == null) false;
 
