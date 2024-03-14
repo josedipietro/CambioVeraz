@@ -43,6 +43,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   List<Tasa> tasas = [];
 
   double monto = 0;
+  double comision = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -136,11 +137,20 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                               },
                               title: 'Cuenta Saliente',
                             ),
-                            buildField(context, 'Monto', movimiento.monto,
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            buildField(true, context, 'Monto', movimiento.monto,
                                 maxLength: 30,
                                 type: TextInputType.number,
                                 suffix: Text(
                                     cuentaEntranteSelected!.moneda.simbolo),
+                                onlyDigits: true),
+                            buildField(false, context, 'Porcentaje de comision',
+                                movimiento.comision,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: const Text('%'),
                                 onlyDigits: true),
                           ],
                         );
@@ -184,6 +194,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           idOperacion: '1',
           cuentaEntrante: cuentaEntranteSelected,
           cuentaSaliente: null,
+          comision: TextEditingController(text: '0'),
           monto: TextEditingController(text: '0')));
     });
   }
@@ -195,6 +206,19 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
       total += monto;
     }
     return total;
+  }
+
+  double calcularTotalComisiones(List<Movimientos> movimientos) {
+    double totalComisiones = 0;
+
+    for (var movimiento in movimientos) {
+      double monto = double.parse(movimiento.monto.text);
+      double comisionPorcentaje = double.parse(movimiento.comision.text) / 100;
+      double comision = monto * comisionPorcentaje;
+      totalComisiones += comision;
+    }
+
+    return totalComisiones;
   }
 
   onChangeMovimiento(index, cuenta) {
@@ -247,12 +271,29 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   }
 
   Widget buildOperacionTasaPreview() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        const Text('Tasa'),
-        Text(
-            '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Tasa'),
+            Text(
+                '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Comision Total'),
+            Text('Comision total $comision')
+          ],
+        ),
       ],
     );
   }
@@ -263,11 +304,11 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     return double.parse(fixed);
   }
 
-  Widget buildField(
-      BuildContext context, String hintText, TextEditingController controller,
+  Widget buildField(bool montos, BuildContext context, String hintText,
+      TextEditingController controller,
       {int maxLength = 255, type, Widget? suffix, bool onlyDigits = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 0),
       child: TextFormField(
         controller: controller,
         maxLength: maxLength,
@@ -284,9 +325,13 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           if (onlyDigits) FilteringTextInputFormatter.allow(RegExp('[0-9.]')),
         ],
         onChanged: (value) {
-          if (value != '') {
+          if (value != '' && montos) {
             setState(() {
-              monto = double.parse(value);
+              monto = sumarMontos(movimientos);
+            });
+          } else if (value != '' && !montos) {
+            setState(() {
+              comision = calcularTotalComisiones(movimientos);
             });
           }
         },

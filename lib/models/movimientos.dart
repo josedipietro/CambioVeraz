@@ -9,12 +9,14 @@ class Movimientos extends ModeloBase {
   Cuenta? cuentaEntrante;
   Cuenta? cuentaSaliente;
   TextEditingController monto;
+  TextEditingController comision;
 
   Movimientos({
     required this.idOperacion,
     required this.cuentaEntrante,
     required this.cuentaSaliente,
     required this.monto,
+    required this.comision,
     String? id,
     DateTime? ultimaModificacion,
   }) : super(
@@ -35,6 +37,7 @@ class Movimientos extends ModeloBase {
       'cuentaEntrante': cuentaEntrante!.ref,
       'cuentaSaliente': cuentaSaliente!.ref,
       'monto': double.parse(monto.text),
+      'comision': double.parse(comision.text)
     };
   }
 
