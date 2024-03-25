@@ -36,6 +36,7 @@ class Flurorouter {
   static const String usuariosRoute = '/usuarios';
   static const String agregarUsuarioRoute = '/usuarios/agregar';
   static const String editarUsuarioRoute = '/usuarios/editar/:id';
+  static const String listadoDeEgresosIngresos = '/ingresos';
 
   static void configureRoutes() {
     // Auth Routes
@@ -140,6 +141,9 @@ class Flurorouter {
         handler: PagesHandlers.editarUsuario,
         transitionType: TransitionType.fadeIn);
 
+    router.define(listadoDeEgresosIngresos,
+        handler: PagesHandlers.ingresosEgresos,
+        transitionType: TransitionType.fadeIn);
     // 404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;
   }

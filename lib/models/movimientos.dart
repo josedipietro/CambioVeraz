@@ -31,11 +31,23 @@ class Movimientos extends ModeloBase {
   DocumentReference<Object?> get operacionRef =>
       database.operacionesRef.doc(idOperacion);
 
+  factory Movimientos.fromSnapshot(
+      {required QueryDocumentSnapshot snapshot,
+      required Cuenta cuentaEntrante,
+      required Cuenta cuentaSaliente}) {
+    return Movimientos(
+        idOperacion: '1',
+        cuentaEntrante: cuentaEntrante,
+        cuentaSaliente: cuentaSaliente,
+        monto: TextEditingController(text: snapshot.get('monto').toString()),
+        comision:
+            TextEditingController(text: snapshot.get('comision').toString()));
+  }
   @override
   Map<String, dynamic> toJson() {
     return {
-      'cuentaEntrante': cuentaEntrante!.ref,
-      'cuentaSaliente': cuentaSaliente!.ref,
+      'cuentaEntrante': cuentaEntrante!,
+      'cuentaSaliente': cuentaSaliente!,
       'monto': double.parse(monto.text),
       'comision': double.parse(comision.text)
     };

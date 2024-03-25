@@ -68,4 +68,9 @@ class Tasa extends ModeloBase {
       'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }
+
+  @override
+  String toString() {
+    return nombre;
+  }
 }

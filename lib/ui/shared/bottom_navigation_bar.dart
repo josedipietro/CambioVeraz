@@ -53,6 +53,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         return 4;
       case Flurorouter.agregarUsuarioRoute:
         return 4;
+      case Flurorouter.listadoDeEgresosIngresos:
+        return 5;
       default:
         return 2;
     }
@@ -86,6 +88,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               break;
             case 4:
               routeName = Flurorouter.usuariosRoute;
+              break;
+            case 5:
+              routeName = Flurorouter.listadoDeEgresosIngresos;
               break;
             default:
           }
@@ -124,6 +129,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             message: 'Usuarios',
             child: Icon(
               Icons.person,
+              color: Colors.white,
+            ),
+          ),
+          Tooltip(
+            message: 'Tasas',
+            child: Icon(
+              Icons.attach_money,
               color: Colors.white,
             ),
           ),

@@ -2,11 +2,13 @@ import 'package:cambio_veraz/models/arca.dart';
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
+import 'package:cambio_veraz/models/movimientos.dart';
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/models/rol.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class _Database {
   final FirebaseFirestore instance = FirebaseFirestore.instance;
@@ -373,6 +375,74 @@ class _Database {
     final cuenta = Cuenta.fromSnapshot(snapshot: cuenSnapshot, moneda: moneda);
 
     return cuenta;
+  }
+
+  Future<Operacion> getOperacionById(String id) async {
+    final operacionSnapshot = await operacionesRef.doc(id).get();
+
+    final cliente =
+        await getClienteByReference(operacionSnapshot.get('cliente'));
+    final cuentaEntrante =
+        await getCuentaByReference(operacionSnapshot.get('cuentaEntrante'));
+    final cuentaSaliente =
+        await getCuentaByReference(operacionSnapshot.get('cuentaSaliente'));
+    final movimientos = await getMovimientosByOperacionId(id);
+
+    final operacion = Operacion.fromSnapshotById(
+        snapshot: operacionSnapshot,
+        cliente: cliente,
+        cuentaEntrante: cuentaEntrante,
+        cuentaSaliente: cuentaSaliente,
+        movimientos: movimientos);
+
+    return operacion;
+  }
+
+  Stream<Future<List<Operacion>>> getoperacionesIEStream(String search) {
+    return operacionesRef
+        .orderBy('fecha', descending: true)
+        .snapshots()
+        .map((opSnapshot) async {
+      final List<Operacion> operaciones = [];
+
+      for (var e in opSnapshot.docs) {
+        final cliente = await getClienteByReference(e.get('cliente'));
+        final cuentaEntrante =
+            await getCuentaByReference(e.get('cuentaEntrante'));
+        final cuentaSaliente =
+            await getCuentaByReference(e.get('cuentaSaliente'));
+        final movimientos = await getMovimientosByOperacionId(e.id.toString());
+
+        if (containsIgnoreCase(cliente.nombre, search)) {
+          operaciones.add(Operacion.fromSnapshotById(
+              snapshot: e,
+              cliente: cliente,
+              cuentaEntrante: cuentaEntrante,
+              cuentaSaliente: cuentaSaliente,
+              movimientos: movimientos));
+        }
+      }
+
+      return operaciones;
+    });
+  }
+
+  Future<List<Movimientos>> getMovimientosByOperacionId(String id) async {
+    final List<Movimientos> movimientos = [];
+    final cuenSnapshot =
+        await operacionesRef.doc(id).collection('movimientos').get();
+    for (final e in cuenSnapshot.docs) {
+      final cuentaEntrante =
+          await database.getCuentaByReference(e.get('cuentaEntrante'));
+      final cuentaSaliente =
+          await database.getCuentaByReference(e.get('cuentaSaliente'));
+      movimientos.add(Movimientos.fromSnapshot(
+          snapshot: e,
+          cuentaEntrante: cuentaEntrante,
+          cuentaSaliente: cuentaSaliente));
+    }
+
+    return movimientos;
   }
 
   Future<Cuenta> getCuentaByReference(DocumentReference ref) async {

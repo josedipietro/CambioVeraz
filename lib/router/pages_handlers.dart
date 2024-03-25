@@ -9,10 +9,12 @@ import 'package:cambio_veraz/ui/pages/cuenta/editar_cuenta.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/nueva_cuenta.dart';
 import 'package:cambio_veraz/ui/pages/deposito/depositos_list.dart';
 import 'package:cambio_veraz/ui/pages/deposito/nuevo_deposito.dart';
+import 'package:cambio_veraz/ui/pages/ingresos_egresos/ingresos_egresos_list.dart';
 import 'package:cambio_veraz/ui/pages/login/login_page.dart';
 import 'package:cambio_veraz/ui/pages/moneda/editar_moneda.dart';
 import 'package:cambio_veraz/ui/pages/moneda/monedas_list.dart';
 import 'package:cambio_veraz/ui/pages/moneda/nueva_moneda.dart';
+import 'package:cambio_veraz/ui/pages/operacion/editar_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/nueva_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/operaciones_list.dart';
 import 'package:cambio_veraz/ui/pages/tasa/editar_tasa.dart';
@@ -171,6 +173,19 @@ class PagesHandlers {
     }
   });
 
+  static Handler ingresosEgresos = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.listadoDeEgresosIngresos);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const IngresosEgresosListPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
   static Handler agregarOperacion = Handler(handlerFunc: (context, params) {
     final authProvider = context!.watch<AuthProvider>();
     context
@@ -191,8 +206,7 @@ class PagesHandlers {
         .setCurrentPageUrl(Flurorouter.editarOperacionRoute);
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
-      return const OperacionesListPage();
-      //return EditarOperacionPage(tasaId: params["id"]![0]);
+      return EditarOperacionPage(operacionId: params["id"]![0]);
     } else {
       return const LoginPage();
     }

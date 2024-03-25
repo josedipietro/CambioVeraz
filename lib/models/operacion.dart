@@ -2,6 +2,7 @@ import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/modelo_base.dart';
 import 'package:cambio_veraz/models/movimientos.dart';
+import 'package:cambio_veraz/models/opreacion_elemento.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/storage.dart';
@@ -57,6 +58,30 @@ class Operacion extends ModeloBase {
           ? snapshot.get('ultimaModificacion').toDate()
           : null,
       movimimentos: [],
+    );
+  }
+
+  factory Operacion.fromSnapshotById(
+      {required DocumentSnapshot snapshot,
+      required Cliente cliente,
+      required Cuenta cuentaEntrante,
+      required List<Movimientos> movimientos,
+      required Cuenta cuentaSaliente}) {
+    return Operacion(
+      id: snapshot.id,
+      cuentaSaliente: cuentaSaliente,
+      cliente: cliente,
+      cuentaEntrante: cuentaEntrante,
+      fecha: (snapshot.get('fecha') as Timestamp).toDate(),
+      tasa: Tasa.fromJson(
+          map: snapshot.get('tasa'),
+          monedaEntrante: cuentaEntrante.moneda,
+          monedaSaliente: cuentaSaliente.moneda),
+      monto: snapshot.get('monto'),
+      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
+          ? snapshot.get('ultimaModificacion').toDate()
+          : null,
+      movimimentos: movimientos,
     );
   }
 

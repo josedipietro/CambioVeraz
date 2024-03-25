@@ -2,48 +2,71 @@ import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/movimientos.dart';
-import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/providers/clientes_provider.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
 import 'package:cambio_veraz/providers/monedas_provider.dart';
 import 'package:cambio_veraz/providers/tasas_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
+import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
+import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:collection/collection.dart';
 
-class NuevaOperacionPage extends StatefulWidget {
-  static String route = '/operacions/nuevaOperacion';
-  const NuevaOperacionPage({super.key});
+class EditarOperacionPage extends StatefulWidget {
+  static String route = '/tasas/editarTasa/:id';
+
+  final String operacionId;
+  const EditarOperacionPage({super.key, required this.operacionId});
 
   @override
-  State<NuevaOperacionPage> createState() => _NuevaCientePageState();
+  State<EditarOperacionPage> createState() => _EditarOperacionPageState();
 }
 
-class _NuevaCientePageState extends State<NuevaOperacionPage> {
+class _EditarOperacionPageState extends State<EditarOperacionPage> {
+  bool loading = false;
   Cliente? clienteSelected;
   List<Movimientos> movimientos = [];
   Moneda? monedaEntranteSelected;
   Moneda? monedaSalienteSelected;
   Tasa? tasaSelected;
-
   Cuenta? cuentaEntranteSelected;
   List<Cuenta> cuentasSalientesSelected = [];
   Cuenta? cuentaSalienteSelected;
   PlatformFile? comprobanteFile;
-
   List<Tasa> tasas = [];
   List<Tasa> tasasElegibles = [];
-
   double monto = 0;
   double comision = 0;
+
+  @override
+  void initState() {
+    loading = true;
+    inicializarCampos();
+
+    super.initState();
+  }
+
+  inicializarCampos() async {
+    final operacion = await database.getOperacionById(widget.operacionId);
+
+    setState(() {
+      monedaSalienteSelected = operacion.cuentaSaliente.moneda;
+      monedaEntranteSelected = operacion.cuentaEntrante.moneda;
+      cuentaEntranteSelected = operacion.cuentaEntrante;
+      movimientos = operacion.movimimentos;
+      tasaSelected = operacion.tasa;
+      clienteSelected = operacion.cliente;
+      monto = sumarMontos(operacion.movimimentos);
+      comision = calcularTotalComisiones(operacion.movimimentos);
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,23 +77,113 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
       },
       child: Scaffold(
         appBar: buildAppBar(),
-        body: buildBody(context),
+        body: loading ? const Text('Cargando') : buildBody(context),
       ),
     );
   }
 
-  AppBar buildAppBar() {
-    return AppBar(
-      title: const Text('Agregar Operacion'),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          NavigationService.replaceTo(Flurorouter.operacionesRoute);
-        },
-      ),
+  onClienteSelected(Cliente? cliente) {
+    setState(() {
+      clienteSelected = cliente;
+    });
+  }
+
+  onMonedaEntranteSelected(Moneda? moneda) {
+    setState(() {
+      monedaEntranteSelected = moneda;
+      cuentaEntranteSelected = null;
+      monedaSalienteSelected = null;
+      cuentasSalientesSelected = [];
+      movimientos = [];
+    });
+  }
+
+  onMonedaSalienteSelected(Moneda? moneda) {
+    final tasa = tasas.where((element) =>
+        element.monedaEntrante.nombreISO == monedaEntranteSelected!.nombreISO &&
+        element.monedaSaliente.nombreISO == moneda!.nombreISO);
+
+    tasasElegibles = tasa.toList();
+    setState(() {
+      monedaSalienteSelected = moneda;
+      cuentasSalientesSelected = [];
+      movimientos = [];
+    });
+  }
+
+  onCuentaEntranteSelected(Cuenta? cuenta) {
+    setState(() {
+      cuentaEntranteSelected = cuenta;
+    });
+  }
+
+  Widget buildUploadFileButton(
+      String title, Function(PlatformFile) onFileSelected) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
+      width: double.infinity,
+      height: 80,
+      child: OutlinedButton(
+          onPressed: () async {
+            var picked = await FilePicker.platform
+                .pickFiles(type: FileType.image, withData: true);
+
+            if (picked != null) {
+              onFileSelected(picked.files.first);
+              print(picked.files.first.name);
+              print(picked.files.first.bytes);
+            }
+          },
+          child: Text(title)),
     );
   }
 
+  void agregarOperacion(cuentasProvider, cuentaEntranteSelected) {
+    setState(() {
+      movimientos.add(Movimientos(
+          idOperacion: '1',
+          cuentaEntrante: cuentaEntranteSelected,
+          cuentaSaliente: null,
+          comision: TextEditingController(text: '0'),
+          monto: TextEditingController(text: '0')));
+    });
+  }
+
+  formatMontoTasa() {
+    double conversion = tasaSelected!.tasa * monto;
+    String fixed = conversion.toStringAsFixed(2);
+    return double.parse(fixed);
+  }
+
+  Widget buildOperacionTasaPreview() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Tasa'),
+            Text(
+                '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Comision Total'),
+            Text('Comision total $comision')
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildAppBar() {}
   Widget buildBody(BuildContext context) {
     final clientesProvider = context.watch<ClientesProvider>();
     final monedasProvider = context.watch<MonedasProvider>();
@@ -86,12 +199,14 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
               children: [
                 CustomDropdown<Cliente>(
                     items: clientesProvider.clientes,
-                    value: clienteSelected,
+                    value: clientesProvider.clientes.firstWhereOrNull(
+                        (element) => element.id == clienteSelected?.id),
                     onChange: onClienteSelected,
                     title: 'Cliente'),
                 CustomDropdown<Moneda>(
                     items: monedasProvider.monedas,
-                    value: monedaEntranteSelected,
+                    value: monedasProvider.monedas.firstWhereOrNull(
+                        (element) => element.id == monedaEntranteSelected?.id),
                     onChange: onMonedaEntranteSelected,
                     title: 'Moneda Entrante'),
                 if (monedaEntranteSelected != null)
@@ -101,7 +216,9 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                               element.moneda.nombreISO ==
                               monedaEntranteSelected!.nombreISO)
                           .toList(),
-                      value: cuentaEntranteSelected,
+                      value: cuentasProvider.cuentas.firstWhereOrNull(
+                          (element) =>
+                              element.id == cuentaEntranteSelected?.id),
                       onChange: onCuentaEntranteSelected,
                       title: 'Cuenta Entrante'),
                 if (monedaEntranteSelected != null)
@@ -111,20 +228,28 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                               element.nombreISO !=
                               monedaEntranteSelected!.nombreISO)
                           .toList(),
-                      value: monedaSalienteSelected,
+                      value: monedasProvider.monedas.firstWhereOrNull(
+                          (element) =>
+                              element.id == monedaSalienteSelected?.id),
                       onChange: onMonedaSalienteSelected,
                       title: 'Moneda Saliente'),
-                if (tasasElegibles.isNotEmpty)
-                  CustomDropdown<Tasa>(
-                    items: tasasElegibles,
-                    value: tasaSelected,
-                    onChange: (Tasa? tasa) {
-                      setState(() {
-                        tasaSelected = tasa;
-                      });
-                    },
-                    title: 'Tasa a elegir',
-                  ),
+                CustomDropdown<Tasa>(
+                  items: tasas
+                      .where((element) =>
+                          element.monedaEntrante.nombreISO ==
+                              monedaEntranteSelected!.nombreISO &&
+                          element.monedaSaliente.nombreISO ==
+                              monedaSalienteSelected!.nombreISO)
+                      .toList(),
+                  value: tasas.firstWhereOrNull(
+                      (element) => element.nombre == tasaSelected?.nombre),
+                  onChange: (Tasa? tasa) {
+                    setState(() {
+                      tasaSelected = tasa;
+                    });
+                  },
+                  title: 'Tasa a elegir',
+                ),
                 ListView.builder(
                   shrinkWrap: true,
                   itemCount: movimientos.length,
@@ -140,7 +265,10 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                                       element.moneda.nombreISO ==
                                       monedaSalienteSelected!.nombreISO)
                                   .toList(),
-                              value: movimiento.cuentaSaliente,
+                              value: cuentasProvider.cuentas.firstWhereOrNull(
+                                  (element) =>
+                                      element.id ==
+                                      movimiento.cuentaSaliente?.id),
                               onChange: (Cuenta? cuenta) {
                                 setState(() {
                                   onChangeMovimiento(index, cuenta);
@@ -199,120 +327,10 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     );
   }
 
-  void agregarOperacion(cuentasProvider, cuentaEntranteSelected) {
-    setState(() {
-      movimientos.add(Movimientos(
-          idOperacion: '1',
-          cuentaEntrante: cuentaEntranteSelected,
-          cuentaSaliente: null,
-          comision: TextEditingController(text: '0'),
-          monto: TextEditingController(text: '0')));
-    });
-  }
-
-  double sumarMontos(List<Movimientos> movimientos) {
-    double total = 0.0;
-    for (var movimiento in movimientos) {
-      double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
-      total += monto;
-    }
-    return total;
-  }
-
-  double calcularTotalComisiones(List<Movimientos> movimientos) {
-    double totalComisiones = 0;
-
-    for (var movimiento in movimientos) {
-      double monto = double.parse(movimiento.monto.text);
-      double comisionPorcentaje = double.parse(movimiento.comision.text) / 100;
-      double comision = monto * comisionPorcentaje;
-      totalComisiones += comision;
-    }
-
-    return totalComisiones;
-  }
-
   onChangeMovimiento(index, cuenta) {
     setState(() {
       movimientos[index].cuentaSaliente = cuenta;
     });
-  }
-
-  onClienteSelected(Cliente? cliente) {
-    setState(() {
-      clienteSelected = cliente;
-    });
-  }
-
-  onMonedaEntranteSelected(Moneda? moneda) {
-    setState(() {
-      monedaEntranteSelected = moneda;
-      cuentaEntranteSelected = null;
-      monedaSalienteSelected = null;
-      cuentasSalientesSelected = [];
-      movimientos = [];
-    });
-  }
-
-  onMonedaSalienteSelected(Moneda? moneda) {
-    final tasa = tasas.where((element) =>
-        element.monedaEntrante.nombreISO == monedaEntranteSelected!.nombreISO &&
-        element.monedaSaliente.nombreISO == moneda!.nombreISO);
-
-    tasasElegibles = tasa.toList();
-    setState(() {
-      monedaSalienteSelected = moneda;
-      cuentasSalientesSelected = [];
-      movimientos = [];
-    });
-  }
-
-  onCuentaEntranteSelected(Cuenta? cuenta) {
-    setState(() {
-      cuentaEntranteSelected = cuenta;
-    });
-  }
-
-  Function(Cuenta?) onCuentaSalienteSelected(List<Cuenta> cuentas) {
-    return (Cuenta? cuenta) {
-      setState(() {
-        cuentasSalientesSelected = cuentas;
-      });
-    };
-  }
-
-  Widget buildOperacionTasaPreview() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Tasa'),
-            Text(
-                '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Comision Total'),
-            Text('Comision total $comision')
-          ],
-        ),
-      ],
-    );
-  }
-
-  formatMontoTasa() {
-    double conversion = tasaSelected!.tasa * monto;
-    String fixed = conversion.toStringAsFixed(2);
-    return double.parse(fixed);
   }
 
   Widget buildField(bool montos, BuildContext context, String hintText,
@@ -350,79 +368,27 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     );
   }
 
-  Widget buildUploadFileButton(
-      String title, Function(PlatformFile) onFileSelected) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
-      width: double.infinity,
-      height: 80,
-      child: OutlinedButton(
-          onPressed: () async {
-            var picked = await FilePicker.platform
-                .pickFiles(type: FileType.image, withData: true);
+  double calcularTotalComisiones(List<Movimientos> movimientos) {
+    double totalComisiones = 0;
 
-            if (picked != null) {
-              onFileSelected(picked.files.first);
-              print(picked.files.first.name);
-              print(picked.files.first.bytes);
-            }
-          },
-          child: Text(title)),
-    );
-  }
-
-  agregar() async {
-    if (!validate()) {
-      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('Datos erroneos'),
-      ));
-    }
-
-    final operacion = Operacion(
-        cuentaSaliente: movimientos[0].cuentaSaliente!,
-        cliente: clienteSelected!,
-        cuentaEntrante: cuentaEntranteSelected!,
-        movimimentos: movimientos,
-        fecha: DateTime.now(),
-        monto: sumarMontos(movimientos),
-        tasa: tasaSelected!);
-
-    try {
-      operacion.referenciaComprobante.putData(
-          comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
-
-      await operacion.insert();
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Operacion Agregada'),
-      ));
-
-      return NavigationService.replaceTo(Flurorouter.operacionesRoute);
-    } catch (err) {
-      print(err);
-      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('Ha ocurrido un error al agregar.'),
-      ));
-    }
-  }
-
-  bool validate() {
-    if (clienteSelected == null) return false;
-    if (cuentaEntranteSelected == null) return false;
-    if (tasaSelected == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('No hay tasa registrada para el par seleccionado')));
-      return false;
-    }
     for (var movimiento in movimientos) {
-      if (movimiento.monto.text == '0') return false;
+      double monto = double.parse(movimiento.monto.text);
+      double comisionPorcentaje = double.parse(movimiento.comision.text) / 100;
+      double comision = monto * comisionPorcentaje;
+      totalComisiones += comision;
     }
 
-    if (comprobanteFile == null) false;
-
-    return true;
+    return totalComisiones;
   }
+
+  double sumarMontos(List<Movimientos> movimientos) {
+    double total = 0.0;
+    for (var movimiento in movimientos) {
+      double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
+      total += monto;
+    }
+    return total;
+  }
+
+  agregar() async {}
 }

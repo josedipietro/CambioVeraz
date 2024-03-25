@@ -1,16 +1,15 @@
 import 'package:cambio_veraz/models/operacion.dart';
-import 'package:cambio_veraz/router/router.dart';
-import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/models/opreacion_elemento.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class OperacionTile extends StatelessWidget {
-  final Operacion operacion;
+class IngresosEgresosTile extends StatelessWidget {
+  final IngresoEgresos operacion;
   final void Function(Operacion) onRemove;
   final DateFormat format = DateFormat.yMd('es');
 
-  OperacionTile({
+  IngresosEgresosTile({
     super.key,
     required this.operacion,
     required this.onRemove,
@@ -29,10 +28,10 @@ class OperacionTile extends StatelessWidget {
         children: [
           _buildTitleAndDescription(),
           _buildMontoYTasa(),
-          _buildDetailsArea(),
-          _buildAddPhotoArea(),
-          _buildEditArea(),
-          _buildRemovableArea(context),
+          // _buildDetailsArea(),
+          // _buildAddPhotoArea(),
+          // _buildEditArea(),
+          // _buildRemovableArea(context),
         ],
       ),
     );
@@ -66,12 +65,6 @@ class OperacionTile extends StatelessWidget {
                 color: Colors.black87,
               ),
             ),
-            Text(
-              format.format(operacion.fecha),
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-            )
           ],
         ),
       ),
@@ -87,21 +80,28 @@ class OperacionTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '${operacion.cuentaEntrante.moneda.simbolo}${operacion.monto}',
+            '${operacion.cuenta.moneda.simbolo}${operacion.monto}',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.black87,
+              color: operacion.operacion ? Colors.green : Colors.red,
             ),
           ),
           Text(
-            '${operacion.cuentaEntrante.moneda.simbolo}1 - ${operacion.tasa.monedaSaliente.simbolo}${operacion.tasa.tasa}',
+            '${operacion.cuenta.moneda.simbolo}1 - ${operacion.tasa.monedaSaliente.simbolo}${operacion.tasa.tasa}',
             style: const TextStyle(
               fontSize: 12,
             ),
-          )
+          ),
+          if (operacion.comision != '0' && operacion.comision != '')
+            Text(
+              'Comision: ${operacion.comision}%',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
         ],
       ),
     ));
@@ -141,13 +141,7 @@ class OperacionTile extends StatelessWidget {
     final confirm = await showAlertDialog(context,
         message: '¿Deseas eliminar esta Operación?',
         title: 'Eliminar Operación');
-    if (confirm == true) {
-      onRemove(operacion);
-    }
   }
 
-  void _onEdit() async {
-    NavigationService.navigateTo(
-        Flurorouter.editarOperacionRoute.replaceFirst(':id', operacion.id));
-  }
+  void _onEdit() async {}
 }
