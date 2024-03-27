@@ -80,7 +80,7 @@ class IngresosEgresosTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '${operacion.cuenta.moneda.simbolo}${operacion.monto}',
+            '${operacion.cuenta.moneda.simbolo}${calcularDinero(operacion.monto, operacion.comision)}',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -105,6 +105,10 @@ class IngresosEgresosTile extends StatelessWidget {
         ],
       ),
     ));
+  }
+
+  calcularDinero(double monto, String comision) {
+    return (monto * (double.parse(comision) ?? 0.0) / 100 + monto);
   }
 
   Widget _buildRemovableArea(BuildContext context) {

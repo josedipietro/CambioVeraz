@@ -5,6 +5,7 @@ import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +28,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
   TextEditingController numeroCuentaController = TextEditingController();
   TextEditingController numeroIdController = TextEditingController();
   TextEditingController comisionController = TextEditingController();
-
+  bool preferencia = false;
   Moneda? monedaSelected;
 
   @override
@@ -41,12 +42,14 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
   inicializarCampos() async {
     final cliente = await database.getCuentaById(widget.cuentaId);
 
-    nombreController.text = cliente.nombre;
-    nombreTitularController.text = cliente.nombreTitular;
-    numeroCuentaController.text = cliente.numeroCuenta;
-    numeroIdController.text = cliente.numeroIdentificacion;
-
     setState(() {
+      monedaSelected = cliente.moneda;
+      nombreController.text = cliente.nombre;
+      nombreTitularController.text = cliente.nombreTitular;
+      numeroCuentaController.text = cliente.numeroCuenta;
+      numeroIdController.text = cliente.numeroIdentificacion;
+      comisionController.text = cliente.comision.toString();
+      preferencia = cliente.preferencia ?? false;
       loading = false;
     });
   }
@@ -97,7 +100,8 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
                           maxLength: 30),
                       CustomDropdown<Moneda>(
                         items: monedasProvider.monedas,
-                        value: monedaSelected,
+                        value: monedasProvider.monedas.firstWhereOrNull(
+                            (element) => element.id == monedaSelected?.id),
                         onChange: onMonedaSelected,
                         title: 'Moneda',
                       ),
@@ -117,6 +121,19 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
                         maxLength: 30,
                         onlyDigits: true,
                         suffix: const Text('%'),
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: preferencia,
+                            onChanged: (value) {
+                              setState(() {
+                                preferencia = value!;
+                              });
+                            },
+                          ),
+                          const Text('Cuenta preferencial?'),
+                        ],
                       ),
                     ],
                   ),
@@ -176,6 +193,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
     }
 
     final cuenta = Cuenta(
+        preferencia: preferencia,
         id: widget.cuentaId,
         nombre: nombreController.text,
         moneda: monedaSelected!,
@@ -188,7 +206,7 @@ class _EditarCuentaPageState extends State<EditarCuentaPage> {
       await cuenta.update();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).primaryColor,
-        content: const Text('Cuenta Agregada'),
+        content: const Text('Cuenta Editada'),
       ));
 
       return NavigationService.replaceTo(Flurorouter.cuentasRoute);

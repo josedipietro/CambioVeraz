@@ -146,6 +146,21 @@ class _Database {
     });
   }
 
+  Stream<Future<List<Cuenta>>> getcuentasFiltradas(String id) {
+    return cuentasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
+      final List<Cuenta> operaciones = [];
+
+      for (var e in opSnapshot.docs) {
+        final moneda = await getMonedaByReference(e.get('moneda'));
+        if (moneda.id == id || id == '0') {
+          operaciones.add(Cuenta.fromSnapshot(snapshot: e, moneda: moneda));
+        }
+      }
+
+      return operaciones;
+    });
+  }
+
   Future<List<Moneda>> get monedas async {
     final snapshot = await monedasRef.get();
 

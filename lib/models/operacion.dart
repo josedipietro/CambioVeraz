@@ -2,7 +2,6 @@ import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/modelo_base.dart';
 import 'package:cambio_veraz/models/movimientos.dart';
-import 'package:cambio_veraz/models/opreacion_elemento.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/storage.dart';

@@ -214,6 +214,16 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     double total = 0.0;
     for (var movimiento in movimientos) {
       double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
+      double comision = movimiento.cuentaSaliente!.comision ?? 0.0;
+      total += (monto + monto * comision / 100);
+    }
+    return total;
+  }
+
+  double sumarMontosPref(List<Movimientos> movimientos) {
+    double total = 0.0;
+    for (var movimiento in movimientos) {
+      double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
       total += monto;
     }
     return total;
@@ -338,7 +348,9 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         onChanged: (value) {
           if (value != '' && montos) {
             setState(() {
-              monto = sumarMontos(movimientos);
+              monto = movimientos[0].cuentaSaliente!.preferencia
+                  ? sumarMontosPref(movimientos)
+                  : sumarMontos(movimientos);
             });
           } else if (value != '' && !montos) {
             setState(() {
@@ -378,14 +390,18 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         content: Text('Datos erroneos'),
       ));
     }
-
+    print(movimientos[0].cuentaSaliente!.preferencia
+        ? sumarMontosPref(movimientos)
+        : sumarMontos(movimientos) + calcularTotalComisiones(movimientos));
     final operacion = Operacion(
         cuentaSaliente: movimientos[0].cuentaSaliente!,
         cliente: clienteSelected!,
         cuentaEntrante: cuentaEntranteSelected!,
         movimimentos: movimientos,
         fecha: DateTime.now(),
-        monto: sumarMontos(movimientos),
+        monto: (movimientos[0].cuentaSaliente!.preferencia
+            ? sumarMontosPref(movimientos)
+            : sumarMontos(movimientos) + calcularTotalComisiones(movimientos)),
         tasa: tasaSelected!);
 
     try {

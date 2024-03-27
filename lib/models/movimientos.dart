@@ -46,8 +46,8 @@ class Movimientos extends ModeloBase {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'cuentaEntrante': cuentaEntrante!,
-      'cuentaSaliente': cuentaSaliente!,
+      'cuentaEntrante': cuentaEntrante!.ref,
+      'cuentaSaliente': cuentaSaliente!.ref,
       'monto': double.parse(monto.text),
       'comision': double.parse(comision.text)
     };

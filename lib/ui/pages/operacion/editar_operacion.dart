@@ -2,6 +2,7 @@ import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/movimientos.dart';
+import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/providers/clientes_provider.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
@@ -14,6 +15,7 @@ import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +45,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
   List<Tasa> tasasElegibles = [];
   double monto = 0;
   double comision = 0;
+  String opreacionId = '';
 
   @override
   void initState() {
@@ -56,6 +59,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     final operacion = await database.getOperacionById(widget.operacionId);
 
     setState(() {
+      opreacionId = operacion.id;
       monedaSalienteSelected = operacion.cuentaSaliente.moneda;
       monedaEntranteSelected = operacion.cuentaEntrante.moneda;
       cuentaEntranteSelected = operacion.cuentaEntrante;
@@ -201,13 +205,13 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                     items: clientesProvider.clientes,
                     value: clientesProvider.clientes.firstWhereOrNull(
                         (element) => element.id == clienteSelected?.id),
-                    onChange: onClienteSelected,
+                    onChange: null,
                     title: 'Cliente'),
                 CustomDropdown<Moneda>(
                     items: monedasProvider.monedas,
                     value: monedasProvider.monedas.firstWhereOrNull(
                         (element) => element.id == monedaEntranteSelected?.id),
-                    onChange: onMonedaEntranteSelected,
+                    onChange: null,
                     title: 'Moneda Entrante'),
                 if (monedaEntranteSelected != null)
                   CustomDropdown<Cuenta>(
@@ -219,7 +223,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                       value: cuentasProvider.cuentas.firstWhereOrNull(
                           (element) =>
                               element.id == cuentaEntranteSelected?.id),
-                      onChange: onCuentaEntranteSelected,
+                      onChange: null,
                       title: 'Cuenta Entrante'),
                 if (monedaEntranteSelected != null)
                   CustomDropdown<Moneda>(
@@ -231,24 +235,21 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                       value: monedasProvider.monedas.firstWhereOrNull(
                           (element) =>
                               element.id == monedaSalienteSelected?.id),
-                      onChange: onMonedaSalienteSelected,
+                      onChange: null,
                       title: 'Moneda Saliente'),
-                CustomDropdown<Tasa>(
-                  items: tasas
-                      .where((element) =>
-                          element.monedaEntrante.nombreISO ==
-                              monedaEntranteSelected!.nombreISO &&
-                          element.monedaSaliente.nombreISO ==
-                              monedaSalienteSelected!.nombreISO)
-                      .toList(),
-                  value: tasas.firstWhereOrNull(
-                      (element) => element.nombre == tasaSelected?.nombre),
-                  onChange: (Tasa? tasa) {
-                    setState(() {
-                      tasaSelected = tasa;
-                    });
-                  },
-                  title: 'Tasa a elegir',
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: TextFormField(
+                    readOnly: true,
+                    initialValue: tasaSelected!.nombre,
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(color: Colors.grey),
+                      hintText: 'Correo',
+                      focusColor: Colors.grey,
+                      border: OutlineInputBorder(),
+                      enabled: false,
+                    ),
+                  ),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
@@ -319,7 +320,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
             height: 60,
             child: OutlinedButton(
               onPressed: tasaSelected != null ? agregar : () {},
-              child: const Text('Agregar Operacion'),
+              child: const Text('Editar Operacion'),
             ),
           ),
         ],
@@ -390,5 +391,72 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     return total;
   }
 
-  agregar() async {}
+  bool validate() {
+    if (clienteSelected == null) return false;
+    if (cuentaEntranteSelected == null) return false;
+    if (tasaSelected == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('No hay tasa registrada para el par seleccionado')));
+      return false;
+    }
+    for (var movimiento in movimientos) {
+      if (movimiento.monto.text == '0') return false;
+    }
+
+    if (comprobanteFile == null) false;
+
+    return true;
+  }
+
+  double sumarMontosPref(List<Movimientos> movimientos) {
+    double total = 0.0;
+    for (var movimiento in movimientos) {
+      double monto = double.tryParse(movimiento.monto.text) ?? 0.0;
+      total += monto;
+    }
+    return total;
+  }
+
+  agregar() async {
+    if (!validate()) {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Datos erroneos'),
+      ));
+    }
+    final total = movimientos[0].cuentaSaliente!.preferencia
+        ? sumarMontosPref(movimientos)
+        : sumarMontos(movimientos);
+    final comisiones = calcularTotalComisiones(movimientos);
+
+    final operacion = Operacion(
+        id: opreacionId,
+        cuentaSaliente: movimientos[0].cuentaSaliente!,
+        cliente: clienteSelected!,
+        cuentaEntrante: cuentaEntranteSelected!,
+        movimimentos: movimientos,
+        fecha: DateTime.now(),
+        monto: total + comisiones,
+        tasa: tasaSelected!);
+
+    try {
+      operacion.referenciaComprobante.putData(
+          comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+
+      await operacion.update();
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        content: const Text('Operacion Editada'),
+      ));
+
+      return NavigationService.replaceTo(Flurorouter.operacionesRoute);
+    } catch (err) {
+      print(err);
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Ha ocurrido un error al editar.'),
+      ));
+    }
+  }
 }

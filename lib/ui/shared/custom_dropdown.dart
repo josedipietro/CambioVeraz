@@ -10,7 +10,7 @@ class CustomDropdown<T> extends StatelessWidget {
 
   final String title;
   final T? value;
-  final Function(T?) onChange;
+  final Function(T?)? onChange;
   final List<T> items;
 
   @override

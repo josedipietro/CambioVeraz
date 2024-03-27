@@ -22,6 +22,7 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
   TextEditingController numeroCuentaController = TextEditingController();
   TextEditingController numeroIdController = TextEditingController();
   TextEditingController comisionController = TextEditingController();
+  bool preferencia = false;
 
   Moneda? monedaSelected;
 
@@ -83,6 +84,19 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
                   onlyDigits: true,
                   suffix: const Text('%'),
                 ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: preferencia,
+                      onChanged: (value) {
+                        setState(() {
+                          preferencia = value!;
+                        });
+                      },
+                    ),
+                    const Text('Cuenta preferencial?'),
+                  ],
+                ),
               ],
             ),
           ),
@@ -141,6 +155,7 @@ class _NuevaCuentaPageState extends State<NuevaCuentaPage> {
     }
 
     final cuenta = Cuenta(
+        preferencia: preferencia,
         nombre: nombreController.text,
         moneda: monedaSelected!,
         nombreTitular: nombreTitularController.text,

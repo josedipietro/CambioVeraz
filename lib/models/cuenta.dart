@@ -10,11 +10,13 @@ class Cuenta extends ModeloBase {
   String numeroCuenta;
   String numeroIdentificacion;
   double comision;
+  bool preferencia;
 
   Cuenta(
       {String? id,
       DateTime? ultimaModificacion,
       required this.nombre,
+      required this.preferencia,
       required this.nombreTitular,
       required this.moneda,
       required this.numeroCuenta,
@@ -30,6 +32,7 @@ class Cuenta extends ModeloBase {
   factory Cuenta.fromSnapshot(
       {required DocumentSnapshot snapshot, required Moneda moneda}) {
     return Cuenta(
+      preferencia: snapshot.get('preferencia'),
       id: snapshot.id,
       nombre: snapshot.get('nombre'),
       nombreTitular: snapshot.get('nombreTitular'),
@@ -46,6 +49,7 @@ class Cuenta extends ModeloBase {
   @override
   Map<String, dynamic> toJson() {
     return {
+      'preferencia': preferencia ?? false,
       'nombre': nombre,
       'moneda': moneda.ref,
       'nombreTitular': nombreTitular,
