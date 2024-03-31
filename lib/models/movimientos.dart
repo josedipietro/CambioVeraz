@@ -36,6 +36,7 @@ class Movimientos extends ModeloBase {
       required Cuenta cuentaEntrante,
       required Cuenta cuentaSaliente}) {
     return Movimientos(
+        id: snapshot.id,
         idOperacion: '1',
         cuentaEntrante: cuentaEntrante,
         cuentaSaliente: cuentaSaliente,

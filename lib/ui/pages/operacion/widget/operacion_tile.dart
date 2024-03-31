@@ -160,6 +160,7 @@ class _OperacionTileState extends State<OperacionTile> {
       loading = true;
     });
     inicializarCampo().then((_) async {
+      referenceComprobante = operacion?.referenciaComprobante;
       final confirm = await showViewDialog(
         context,
         content: !loading
@@ -239,17 +240,17 @@ class _OperacionTileState extends State<OperacionTile> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                      // FutureBuilder<String?>(
-                      //   future: referenceComprobante!.getDownloadURL(),
-                      //   builder: (context, snapshot) {
-                      //     if (snapshot.connectionState ==
-                      //         ConnectionState.done) {
-                      //       return Image.network(snapshot.data!);
-                      //     } else {
-                      //       return const CircularProgressIndicator();
-                      //     }
-                      //   },
-                      // ),
+                      FutureBuilder<String?>(
+                        future: referenceComprobante?.getDownloadURL(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return Image.network(snapshot.data!);
+                          } else {
+                            return const CircularProgressIndicator();
+                          }
+                        },
+                      ),
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

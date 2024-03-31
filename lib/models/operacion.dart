@@ -107,6 +107,15 @@ class Operacion extends ModeloBase {
   }
 
   @override
+  Future update() async {
+    await super.update();
+    for (var movimiento in movimimentos) {
+      movimiento.idOperacion = id;
+      await movimiento.update();
+    }
+  }
+
+  @override
   String toString() {
     return '${cliente.nombre} ${cliente.apellido}';
   }
