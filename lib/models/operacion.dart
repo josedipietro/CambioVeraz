@@ -30,8 +30,16 @@ class Operacion extends ModeloBase {
             id: id ?? database.operacionesRef.doc().id,
             ultimaModificacion: ultimaModificacion);
 
-  get referenciaComprobante {
-    return storage.operacionesRef.child('$id.png');
+  get referenciaComprobanteOne {
+    return storage.operacionesRef.child('$id-1.png');
+  }
+
+  get referenciaComprobanteTwo {
+    return storage.operacionesRef.child('$id-2.png');
+  }
+
+  get referenciaComprobanteThree {
+    return storage.operacionesRef.child('$id-3.png');
   }
 
   @override

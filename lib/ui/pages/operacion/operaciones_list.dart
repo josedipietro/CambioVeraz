@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cambio_veraz/models/code_verification.dart';
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/providers/operaciones_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
@@ -29,7 +30,6 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
   Widget build(BuildContext context) {
     print('operacions list');
     final operacionsProvider = context.watch<OperacionesProvider>();
-
     return buildBody(context, operacionsProvider);
   }
 

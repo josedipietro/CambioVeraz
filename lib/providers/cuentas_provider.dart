@@ -30,11 +30,11 @@ class CuentasProvider extends ChangeNotifier {
     });
   }
 
-  getCuentasFiltradas(String id) async {
+  getCuentasFiltradas(String id, String search) async {
     _loading = true;
     notifyListeners();
 
-    database.getcuentasFiltradas(id).listen((event) async {
+    database.getcuentasFiltradas(id, search).listen((event) async {
       _cuentas = await event;
       _loading = false;
       notifyListeners();

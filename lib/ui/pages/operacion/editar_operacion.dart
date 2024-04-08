@@ -45,6 +45,9 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
   List<Tasa> tasasElegibles = [];
   double monto = 0;
   double comision = 0;
+  PlatformFile? comprobanteFileOne;
+  PlatformFile? comprobanteFileTwo;
+  PlatformFile? comprobanteFileThree;
   String opreacionId = '';
 
   @override
@@ -59,6 +62,23 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     final operacion = await database.getOperacionById(widget.operacionId);
 
     setState(() {
+      Future<String?> downloadURLOne =
+          operacion.referenciaComprobanteOne.getDownloadURL();
+      Future<String?> downloadURLTwo =
+          operacion.referenciaComprobanteTwo.getDownloadURL();
+      Future<String?> downloadURLThree =
+          operacion.referenciaComprobanteThree.getDownloadURL();
+      downloadURLOne.then((urlOne) {
+        comprobanteFileOne = PlatformFile(name: urlOne!, size: 20);
+      }).catchError((error) {});
+
+      downloadURLTwo.then((urlTwo) {
+        comprobanteFileTwo = PlatformFile(name: urlTwo!, size: 20);
+      }).catchError((error) {});
+
+      downloadURLThree.then((urlThree) {
+        comprobanteFileThree = PlatformFile(name: urlThree!, size: 20);
+      }).catchError((error) {});
       opreacionId = operacion.id;
       monedaSalienteSelected = operacion.cuentaSaliente.moneda;
       monedaEntranteSelected = operacion.cuentaEntrante.moneda;
@@ -121,24 +141,108 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     });
   }
 
-  Widget buildUploadFileButton(
+  Widget buildUploadFileButtonOne(
       String title, Function(PlatformFile) onFileSelected) {
     return Container(
       padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
       width: double.infinity,
-      height: 80,
+      height: 100,
       child: OutlinedButton(
-          onPressed: () async {
-            var picked = await FilePicker.platform
-                .pickFiles(type: FileType.image, withData: true);
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
 
-            if (picked != null) {
+          if (picked != null) {
+            setState(() {
               onFileSelected(picked.files.first);
-              print(picked.files.first.name);
-              print(picked.files.first.bytes);
-            }
-          },
-          child: Text(title)),
+            });
+          }
+        },
+        child: comprobanteFileOne != null
+            ? Text(comprobanteFileOne!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget buildUploadFileButtonTwo(
+      String title, Function(PlatformFile) onFileSelected) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
+      width: double.infinity,
+      height: 100,
+      child: OutlinedButton(
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
+
+          if (picked != null) {
+            setState(() {
+              onFileSelected(picked.files.first);
+            });
+          }
+        },
+        child: comprobanteFileTwo != null
+            ? Text(comprobanteFileTwo!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget buildUploadFileButtonThree(
+      String title, Function(PlatformFile) onFileSelected) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
+      width: double.infinity,
+      height: 100,
+      child: OutlinedButton(
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
+
+          if (picked != null) {
+            setState(() {
+              onFileSelected(picked.files.first);
+            });
+          }
+        },
+        child: comprobanteFileThree != null
+            ? Text(comprobanteFileThree!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
     );
   }
 
@@ -298,11 +402,38 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                     );
                   },
                 ),
-                buildUploadFileButton('Subir Comprobante', (file) {
-                  comprobanteFile = file;
-                  NotificationsService.showSnackbar(
-                      'Comprobante ${file.name} cargado');
-                }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child:
+                          buildUploadFileButtonOne('Subir Comprobante', (file) {
+                        comprobanteFileOne = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child:
+                          buildUploadFileButtonTwo('Subir Comprobante', (file) {
+                        comprobanteFileTwo = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: buildUploadFileButtonThree('Subir Comprobante',
+                          (file) {
+                        comprobanteFileThree = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                  ],
+                ),
                 if (monedaSalienteSelected != null)
                   ElevatedButton(
                       onPressed: () => {
@@ -417,6 +548,12 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     return total;
   }
 
+  bool isFlutterURL(String url) {
+    bool validURL = Uri.parse(url).isAbsolute;
+    print(validURL);
+    return validURL;
+  }
+
   agregar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -440,8 +577,23 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
         tasa: tasaSelected!);
 
     try {
-      operacion.referenciaComprobante.putData(
-          comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      if (!isFlutterURL(comprobanteFileTwo!.name)) {
+        operacion.referenciaComprobanteOne.putData(comprobanteFileOne!.bytes!,
+            SettableMetadata(contentType: 'image/png'));
+      }
+
+      if (comprobanteFileTwo != null &&
+          !isFlutterURL(comprobanteFileTwo!.name)) {
+        operacion.referenciaComprobanteTwo.putData(comprobanteFileTwo!.bytes!,
+            SettableMetadata(contentType: 'image/png'));
+      }
+
+      if (comprobanteFileThree != null &&
+          !isFlutterURL(comprobanteFileThree!.name)) {
+        operacion.referenciaComprobanteThree.putData(
+            comprobanteFileThree!.bytes!,
+            SettableMetadata(contentType: 'image/png'));
+      }
 
       await operacion.update();
 

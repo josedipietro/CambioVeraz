@@ -1,4 +1,5 @@
 import 'package:cambio_veraz/firebase_options.dart';
+import 'package:cambio_veraz/providers/code_verification.dart';
 import 'package:cambio_veraz/providers/depositos_provider.dart';
 import 'package:cambio_veraz/providers/ingresos_egresos.dart';
 import 'package:cambio_veraz/providers/operaciones_provider.dart';
@@ -48,6 +49,8 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(
             lazy: false, create: (_) => OperacionesProvider()),
         ChangeNotifierProvider(lazy: false, create: (_) => DepositosProvider()),
+        ChangeNotifierProvider(
+            lazy: false, create: (_) => CodeVerificationProvider()),
       ],
       child: const MyApp(),
     );

@@ -1,5 +1,6 @@
 import 'package:cambio_veraz/models/arca.dart';
 import 'package:cambio_veraz/models/cliente.dart';
+import 'package:cambio_veraz/models/code_verification.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/movimientos.dart';
@@ -8,7 +9,6 @@ import 'package:cambio_veraz/models/rol.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/models/usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class _Database {
   final FirebaseFirestore instance = FirebaseFirestore.instance;
@@ -20,6 +20,7 @@ class _Database {
   late CollectionReference cuentasRef;
   late CollectionReference rolesRef;
   late CollectionReference usuariosRef;
+  late CollectionReference codeRef;
 
   _Database() {
     operacionesRef = instance.collection('operaciones');
@@ -29,6 +30,7 @@ class _Database {
     arcasRef = instance.collection('arcas');
     cuentasRef = instance.collection('cuentas');
     rolesRef = instance.collection('roles');
+    codeRef = instance.collection('code');
     usuariosRef = instance.collection('usuarios');
   }
 
@@ -54,6 +56,18 @@ class _Database {
     }
 
     return operaciones;
+  }
+
+  Stream<List<CodeVerification>> get code {
+    return codeRef.snapshots().map((opSnapshot) {
+      final List<CodeVerification> code = [];
+
+      for (var e in opSnapshot.docs) {
+        code.add(CodeVerification.fromSnapshot(e));
+      }
+
+      return code;
+    });
   }
 
   Stream<Future<List<Operacion>>> getoperacionesStream(String search) {
@@ -146,19 +160,24 @@ class _Database {
     });
   }
 
-  Stream<Future<List<Cuenta>>> getcuentasFiltradas(String id) {
-    return cuentasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
-      final List<Cuenta> operaciones = [];
+  Stream<Future<List<Cuenta>>> getcuentasFiltradas(String id, String search) {
+    return cuentasRef
+        .orderBy('nombre')
+        .startAt([search.toUpperCase()])
+        .endAt(["$search\uf8ff".toUpperCase()])
+        .snapshots()
+        .map((opSnapshot) async {
+          final List<Cuenta> operaciones = [];
 
-      for (var e in opSnapshot.docs) {
-        final moneda = await getMonedaByReference(e.get('moneda'));
-        if (moneda.id == id || id == '0') {
-          operaciones.add(Cuenta.fromSnapshot(snapshot: e, moneda: moneda));
-        }
-      }
+          for (var e in opSnapshot.docs) {
+            final moneda = await getMonedaByReference(e.get('moneda'));
+            if (moneda.id == id || id == '0') {
+              operaciones.add(Cuenta.fromSnapshot(snapshot: e, moneda: moneda));
+            }
+          }
 
-      return operaciones;
-    });
+          return operaciones;
+        });
   }
 
   Future<List<Moneda>> get monedas async {

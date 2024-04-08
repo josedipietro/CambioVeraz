@@ -1,7 +1,10 @@
+import 'package:cambio_veraz/models/code_verification.dart';
 import 'package:cambio_veraz/models/operacion.dart';
+import 'package:cambio_veraz/providers/code_verification.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
+import 'package:cambio_veraz/services/notification_service.dart';
 import 'package:cambio_veraz/ui/pages/operacion/model/info_class.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:cambio_veraz/ui/shared/view_dialog.dart';
@@ -9,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class OperacionTile extends StatefulWidget {
   final Operacion operacion;
@@ -26,11 +30,15 @@ class OperacionTile extends StatefulWidget {
 
 class _OperacionTileState extends State<OperacionTile> {
   final DateFormat format = DateFormat.yMd('es');
-  Reference? referenceComprobante;
+
+  Future<String>? referenceComprobanteOne;
+  Future<String>? referenceComprobanteTwo;
+  Future<String>? referenceComprobanteThree;
   bool loading = false;
   Operacion? operacion;
   @override
   Widget build(BuildContext context) {
+    final codeProvider = context.watch<CodeVerificationProvider>();
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
@@ -49,16 +57,16 @@ class _OperacionTileState extends State<OperacionTile> {
                 )
               : _buildDetailsArea(context),
           _buildAddPhotoArea(),
-          _buildEditArea(),
+          _buildEditArea(codeProvider.codes),
           _buildRemovableArea(context),
         ],
       ),
     );
   }
 
-  Widget _buildEditArea() {
+  Widget _buildEditArea(List<CodeVerification> data) {
     return GestureDetector(
-      onTap: () => _onEdit(),
+      onTap: () => _onEdit(data[0]),
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Icon(Icons.edit, color: Colors.blue),
@@ -160,7 +168,13 @@ class _OperacionTileState extends State<OperacionTile> {
       loading = true;
     });
     inicializarCampo().then((_) async {
-      referenceComprobante = operacion?.referenciaComprobante;
+      referenceComprobanteOne =
+          operacion?.referenciaComprobanteOne.getDownloadURL();
+      referenceComprobanteTwo =
+          operacion?.referenciaComprobanteTwo.getDownloadURL();
+      referenceComprobanteThree =
+          operacion?.referenciaComprobanteThree.getDownloadURL();
+
       final confirm = await showViewDialog(
         context,
         content: !loading
@@ -240,16 +254,60 @@ class _OperacionTileState extends State<OperacionTile> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                      FutureBuilder<String?>(
-                        future: referenceComprobante?.getDownloadURL(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return Image.network(snapshot.data!);
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
+                      Column(
+                        children: [
+                          if (referenceComprobanteOne != null)
+                            FutureBuilder<String?>(
+                              future: referenceComprobanteOne,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return Image.network(snapshot.data!);
+                                } else {
+                                  return const CircularProgressIndicator();
+                                }
+                              },
+                            ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          if (referenceComprobanteTwo != null)
+                            FutureBuilder<String?>(
+                              future: referenceComprobanteTwo,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData) {
+                                    return Image.network(snapshot.data!);
+                                  } else {
+                                    return ErrorWidget(
+                                        const Text('Error loading image'));
+                                  }
+                                } else {
+                                  return const CircularProgressIndicator();
+                                }
+                              },
+                            ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          if (referenceComprobanteThree != null)
+                            FutureBuilder<String?>(
+                              future: referenceComprobanteThree,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData) {
+                                    return Image.network(snapshot.data!);
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                } else {
+                                  return const CircularProgressIndicator();
+                                }
+                              },
+                            ),
+                        ],
                       ),
                       Center(
                         child: Row(
@@ -316,9 +374,37 @@ class _OperacionTileState extends State<OperacionTile> {
     }
   }
 
-  void _onEdit() async {
-    NavigationService.navigateTo(Flurorouter.editarOperacionRoute
-        .replaceFirst(':id', widget.operacion.id));
+  void _onEdit(CodeVerification data) async {
+    String inputCode = '';
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Ingresa el código'),
+          content: TextField(
+            onChanged: (value) => inputCode = value,
+            decoration: const InputDecoration(hintText: "Código"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Aceptar'),
+              onPressed: () => Navigator.of(context).pop(inputCode),
+            ),
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
+        );
+      },
+    ).then((value) {
+      if (value == data.code) {
+        NavigationService.navigateTo(Flurorouter.editarOperacionRoute
+            .replaceFirst(':id', widget.operacion.id));
+      } else {
+        NotificationsService.showSnackbarError('Codigo invalido');
+      }
+    });
   }
 
   @override

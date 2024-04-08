@@ -37,7 +37,10 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   Cuenta? cuentaEntranteSelected;
   List<Cuenta> cuentasSalientesSelected = [];
   Cuenta? cuentaSalienteSelected;
-  PlatformFile? comprobanteFile;
+
+  PlatformFile? comprobanteFileOne;
+  PlatformFile? comprobanteFileTwo;
+  PlatformFile? comprobanteFileThree;
 
   List<Tasa> tasas = [];
   List<Tasa> tasasElegibles = [];
@@ -169,11 +172,38 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                     );
                   },
                 ),
-                buildUploadFileButton('Subir Comprobante', (file) {
-                  comprobanteFile = file;
-                  NotificationsService.showSnackbar(
-                      'Comprobante ${file.name} cargado');
-                }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child:
+                          buildUploadFileButtonOne('Subir Comprobante', (file) {
+                        comprobanteFileOne = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child:
+                          buildUploadFileButtonTwo('Subir Comprobante', (file) {
+                        comprobanteFileTwo = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: buildUploadFileButtonThree('Subir Comprobante',
+                          (file) {
+                        comprobanteFileThree = file;
+                        NotificationsService.showSnackbar(
+                            'Comprobante ${file.name} cargado');
+                      }),
+                    ),
+                  ],
+                ),
                 if (monedaSalienteSelected != null)
                   ElevatedButton(
                       onPressed: () => {
@@ -362,24 +392,108 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     );
   }
 
-  Widget buildUploadFileButton(
+  Widget buildUploadFileButtonOne(
       String title, Function(PlatformFile) onFileSelected) {
     return Container(
       padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
       width: double.infinity,
-      height: 80,
+      height: 100,
       child: OutlinedButton(
-          onPressed: () async {
-            var picked = await FilePicker.platform
-                .pickFiles(type: FileType.image, withData: true);
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
 
-            if (picked != null) {
+          if (picked != null) {
+            setState(() {
               onFileSelected(picked.files.first);
-              print(picked.files.first.name);
-              print(picked.files.first.bytes);
-            }
-          },
-          child: Text(title)),
+            });
+          }
+        },
+        child: comprobanteFileOne != null
+            ? Text(comprobanteFileOne!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget buildUploadFileButtonTwo(
+      String title, Function(PlatformFile) onFileSelected) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
+      width: double.infinity,
+      height: 100,
+      child: OutlinedButton(
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
+
+          if (picked != null) {
+            setState(() {
+              onFileSelected(picked.files.first);
+            });
+          }
+        },
+        child: comprobanteFileTwo != null
+            ? Text(comprobanteFileTwo!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget buildUploadFileButtonThree(
+      String title, Function(PlatformFile) onFileSelected) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 12.0, top: 12.0),
+      width: double.infinity,
+      height: 100,
+      child: OutlinedButton(
+        onPressed: () async {
+          var picked = await FilePicker.platform
+              .pickFiles(type: FileType.image, withData: true);
+
+          if (picked != null) {
+            setState(() {
+              onFileSelected(picked.files.first);
+            });
+          }
+        },
+        child: comprobanteFileThree != null
+            ? Text(comprobanteFileThree!.name)
+            : Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey),
+                ),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.grey,
+                ),
+              ),
+      ),
     );
   }
 
@@ -405,8 +519,19 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         tasa: tasaSelected!);
 
     try {
-      operacion.referenciaComprobante.putData(
-          comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      operacion.referenciaComprobanteOne.putData(comprobanteFileOne!.bytes!,
+          SettableMetadata(contentType: 'image/png'));
+
+      if (comprobanteFileTwo != null) {
+        operacion.referenciaComprobanteTwo.putData(comprobanteFileTwo!.bytes!,
+            SettableMetadata(contentType: 'image/png'));
+      }
+
+      if (comprobanteFileThree != null) {
+        operacion.referenciaComprobanteThree.putData(
+            comprobanteFileThree!.bytes!,
+            SettableMetadata(contentType: 'image/png'));
+      }
 
       await operacion.insert();
 
@@ -437,7 +562,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
       if (movimiento.monto.text == '0') return false;
     }
 
-    if (comprobanteFile == null) false;
+    if (comprobanteFileOne == null) false;
 
     return true;
   }

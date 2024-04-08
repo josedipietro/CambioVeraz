@@ -114,17 +114,17 @@ class _CuentasListPageState extends State<CuentasListPage> {
   _onSearchChanged(String query, CuentasProvider operacionsProvider) {
     print(query);
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    // _debounce = Timer(const Duration(milliseconds: 500), () {
-    //   operacionsProvider.getCuentasFiltradas(
-    //       monedaSelected != null ? monedaSelected!.id : '', query);
-    // });
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      operacionsProvider.getCuentasFiltradas(
+          monedaSelected != null ? monedaSelected!.id : '', query);
+    });
   }
 
   onMonedaSelected(Moneda? moneda, CuentasProvider cuentas) {
     setState(() {
       if (moneda != null) {
         monedaSelected = moneda;
-        cuentas.getCuentasFiltradas(moneda.id);
+        cuentas.getCuentasFiltradas(moneda.id, '');
       }
     });
   }
