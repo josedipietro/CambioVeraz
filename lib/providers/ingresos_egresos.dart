@@ -27,14 +27,15 @@ class IngresosEgresosProvider extends ChangeNotifier {
     // Combinar operaciones y movimientos en una sola lista
     for (var operacion in operaciones) {
       resultado.add(IngresoEgresos(
-        cuenta: operacion.cuentaEntrante,
-        monto: operacion.monto,
-        comision: '0',
-        tasa: operacion.tasa,
-        operacion: true,
-      ));
+          cuenta: operacion.cuentaEntrante,
+          monto: operacion.monto,
+          comision: '0',
+          tasa: operacion.tasa,
+          operacion: true,
+          bono: '0'));
       for (var movimiento in operacion.movimimentos) {
         resultado.add(IngresoEgresos(
+          bono: movimiento.bono.text,
           tasa: operacion.tasa,
           cuenta: movimiento.cuentaSaliente!,
           monto: double.parse(movimiento.monto.text),

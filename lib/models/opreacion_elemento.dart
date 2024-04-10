@@ -5,12 +5,14 @@ class IngresoEgresos {
   Cuenta cuenta;
   double monto;
   String comision;
+  String bono;
   bool operacion;
   Tasa tasa;
 
   IngresoEgresos(
       {required this.cuenta,
       required this.monto,
+      required this.bono,
       required this.comision,
       required this.operacion,
       required this.tasa});

@@ -253,7 +253,8 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
           cuentaEntrante: cuentaEntranteSelected,
           cuentaSaliente: null,
           comision: TextEditingController(text: '0'),
-          monto: TextEditingController(text: '0')));
+          monto: TextEditingController(text: '0'),
+          bono: TextEditingController(text: '0')));
     });
   }
 
@@ -392,6 +393,11 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                                 onlyDigits: true),
                             buildField(false, context, 'Porcentaje de comision',
                                 movimiento.comision,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: const Text('%'),
+                                onlyDigits: true),
+                            buildField(false, context, 'Bono', movimiento.bono,
                                 maxLength: 30,
                                 type: TextInputType.number,
                                 suffix: const Text('%'),
@@ -577,7 +583,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
         tasa: tasaSelected!);
 
     try {
-      if (!isFlutterURL(comprobanteFileTwo!.name)) {
+      if (!isFlutterURL(comprobanteFileOne!.name)) {
         operacion.referenciaComprobanteOne.putData(comprobanteFileOne!.bytes!,
             SettableMetadata(contentType: 'image/png'));
       }

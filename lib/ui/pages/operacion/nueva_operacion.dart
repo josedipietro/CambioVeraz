@@ -166,6 +166,11 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                                 type: TextInputType.number,
                                 suffix: const Text('%'),
                                 onlyDigits: true),
+                            buildField(false, context, 'Bono', movimiento.bono,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: const Text('%'),
+                                onlyDigits: true),
                           ],
                         );
                       },
@@ -235,6 +240,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           idOperacion: '1',
           cuentaEntrante: cuentaEntranteSelected,
           cuentaSaliente: null,
+          bono: TextEditingController(text: '0'),
           comision: TextEditingController(text: '0'),
           monto: TextEditingController(text: '0')));
     });
@@ -504,9 +510,6 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         content: Text('Datos erroneos'),
       ));
     }
-    print(movimientos[0].cuentaSaliente!.preferencia
-        ? sumarMontosPref(movimientos)
-        : sumarMontos(movimientos) + calcularTotalComisiones(movimientos));
     final operacion = Operacion(
         cuentaSaliente: movimientos[0].cuentaSaliente!,
         cliente: clienteSelected!,

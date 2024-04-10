@@ -193,6 +193,12 @@ class _EditarCientePageState extends State<EditarClientePage> {
     );
   }
 
+  bool isFlutterURL(String url) {
+    bool validURL = Uri.parse(url).isAbsolute;
+    print(validURL);
+    return validURL;
+  }
+
   editar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -210,10 +216,14 @@ class _EditarCientePageState extends State<EditarClientePage> {
         telefono: telefonoController.text);
 
     try {
-      cliente.referenciaFotoCedula.putData(
-          cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
-      cliente.referenciaFoto.putData(
-          fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      if (!isFlutterURL(fotoUrl)) {
+        cliente.referenciaFoto.putData(
+            fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      }
+      if (!isFlutterURL(fotoCedulaUrl)) {
+        cliente.referenciaFotoCedula.putData(
+            cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      }
 
       await cliente.update();
 
@@ -238,8 +248,8 @@ class _EditarCientePageState extends State<EditarClientePage> {
     if (cedulaController.text == '') return false;
     if (telefonoController.text == '') return false;
 
-    if (fotoFile == null) false;
-    if (cedulaFile == null) false;
+    if (fotoUrl == null) false;
+    if (fotoCedulaUrl == null) false;
 
     return true;
   }
