@@ -11,12 +11,14 @@ class Movimientos extends ModeloBase {
   TextEditingController monto;
   TextEditingController comision;
   TextEditingController bono;
+  TextEditingController comisionFija;
 
   Movimientos({
     required this.idOperacion,
     required this.cuentaEntrante,
     required this.cuentaSaliente,
     required this.monto,
+    required this.comisionFija,
     required this.bono,
     required this.comision,
     String? id,
@@ -44,6 +46,8 @@ class Movimientos extends ModeloBase {
         cuentaSaliente: cuentaSaliente,
         monto: TextEditingController(text: snapshot.get('monto').toString()),
         bono: TextEditingController(text: snapshot.get('bono').toString()),
+        comisionFija: TextEditingController(
+            text: snapshot.get('comisionFija').toString()),
         comision:
             TextEditingController(text: snapshot.get('comision').toString()));
   }
@@ -54,7 +58,8 @@ class Movimientos extends ModeloBase {
       'cuentaSaliente': cuentaSaliente!.ref,
       'monto': double.parse(monto.text),
       'comision': double.parse(comision.text),
-      'bono': double.parse(bono.text)
+      'bono': double.parse(bono.text),
+      'comisionFija': double.parse(comisionFija.text),
     };
   }
 

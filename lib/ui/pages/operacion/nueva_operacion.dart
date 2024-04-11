@@ -166,10 +166,18 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
                                 type: TextInputType.number,
                                 suffix: const Text('%'),
                                 onlyDigits: true),
+                            buildField(false, context, 'Comision fija',
+                                movimiento.comisionFija,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: Text(
+                                    cuentaEntranteSelected!.moneda.simbolo),
+                                onlyDigits: true),
                             buildField(false, context, 'Bono', movimiento.bono,
                                 maxLength: 30,
                                 type: TextInputType.number,
-                                suffix: const Text('%'),
+                                suffix: Text(
+                                    cuentaEntranteSelected!.moneda.simbolo),
                                 onlyDigits: true),
                           ],
                         );
@@ -240,6 +248,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           idOperacion: '1',
           cuentaEntrante: cuentaEntranteSelected,
           cuentaSaliente: null,
+          comisionFija: TextEditingController(text: '0'),
           bono: TextEditingController(text: '0'),
           comision: TextEditingController(text: '0'),
           monto: TextEditingController(text: '0')));

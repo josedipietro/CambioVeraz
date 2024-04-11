@@ -90,7 +90,7 @@ class IngresosEgresosTile extends StatelessWidget {
             ),
           ),
           Text(
-            '${operacion.cuenta.moneda.simbolo}1 - ${operacion.tasa.monedaSaliente.simbolo}${operacion.tasa.tasa}',
+            '${operacion.cuenta.moneda.simbolo}1 - ${operacion.tasa.monedaEntrante.simbolo}${operacion.tasa.tasa}',
             style: const TextStyle(
               fontSize: 12,
             ),
@@ -104,7 +104,14 @@ class IngresosEgresosTile extends StatelessWidget {
             ),
           if (operacion.bono != '0' && operacion.bono != '')
             Text(
-              'Bono: ${operacion.cuenta.moneda.simbolo}${operacion.bono}',
+              'Bono: ${operacion.tasa.monedaEntrante.simbolo}${operacion.bono}',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          if (operacion.comisionFija != '0' && operacion.comisionFija != '')
+            Text(
+              'Comision fija: ${operacion.tasa.monedaEntrante.simbolo}${operacion.comisionFija}',
               style: const TextStyle(
                 fontSize: 12,
               ),

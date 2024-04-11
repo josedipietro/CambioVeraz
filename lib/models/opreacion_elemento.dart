@@ -8,6 +8,7 @@ class IngresoEgresos {
   String bono;
   bool operacion;
   Tasa tasa;
+  String comisionFija;
 
   IngresoEgresos(
       {required this.cuenta,
@@ -15,6 +16,7 @@ class IngresoEgresos {
       required this.bono,
       required this.comision,
       required this.operacion,
+      required this.comisionFija,
       required this.tasa});
 
   @override

@@ -168,13 +168,6 @@ class _OperacionTileState extends State<OperacionTile> {
       loading = true;
     });
     inicializarCampo().then((_) async {
-      referenceComprobanteOne =
-          operacion?.referenciaComprobanteOne.getDownloadURL();
-      referenceComprobanteTwo =
-          operacion?.referenciaComprobanteTwo.getDownloadURL();
-      referenceComprobanteThree =
-          operacion?.referenciaComprobanteThree.getDownloadURL();
-
       final confirm = await showViewDialog(
         context,
         content: !loading
@@ -357,12 +350,37 @@ class _OperacionTileState extends State<OperacionTile> {
   inicializarCampo() async {
     final operacionRequest =
         await database.getOperacionById(widget.operacion.id);
-    // referenceComprobante =
-    //     widget.operacion.getreferenciaComprobante(widget.operacion.id);
+    final referencia1 =
+        await validatorImage(operacionRequest.referenciaComprobanteOne) == true
+            ? operacionRequest.referenciaComprobanteOne.getDownloadURL()
+            : null;
+    final referencia2 =
+        await validatorImage(operacionRequest.referenciaComprobanteTwo) == true
+            ? operacionRequest.referenciaComprobanteOne.getDownloadURL()
+            : null;
+    final referencia3 =
+        await validatorImage(operacionRequest.referenciaComprobanteThree) ==
+                true
+            ? operacionRequest.referenciaComprobanteOne.getDownloadURL()
+            : null;
+
     setState(() {
+      referenceComprobanteOne = referencia1;
+      referenceComprobanteTwo = referencia2;
+      referenceComprobanteThree = referencia3;
       operacion = operacionRequest;
       loading = false;
     });
+  }
+
+  Future<bool> validatorImage(operacionRequest) async {
+    bool test = true;
+    try {
+      var result = await operacionRequest.getMetadata();
+    } catch (error) {
+      test = false;
+    }
+    return test;
   }
 
   void _onRemove(BuildContext context) async {
@@ -371,6 +389,19 @@ class _OperacionTileState extends State<OperacionTile> {
         title: 'Eliminar Operación');
     if (confirm == true) {
       widget.onRemove(widget.operacion);
+    }
+  }
+
+  Future<String> getDownloadURL(Reference starsRef) async {
+    try {
+      var metadata = await starsRef.getMetadata();
+      var url = await starsRef.getDownloadURL();
+      return url;
+    } catch (e) {
+      if (e is FirebaseException && e.code == 'storage/object_not_found') {
+        // File doesn't exist, handle error
+      }
+      rethrow;
     }
   }
 

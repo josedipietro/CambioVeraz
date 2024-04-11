@@ -58,27 +58,48 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     super.initState();
   }
 
+  Future<bool> validatorImage(operacionRequest) async {
+    bool test = true;
+    try {
+      var result = await operacionRequest.getMetadata();
+    } catch (error) {
+      print('Error: $error');
+      test = false;
+    }
+    return test;
+  }
+
   inicializarCampos() async {
     final operacion = await database.getOperacionById(widget.operacionId);
-
+    Future<String>? downloadURLOne =
+        await validatorImage(operacion.referenciaComprobanteOne) == true
+            ? operacion.referenciaComprobanteOne.getDownloadURL()
+            : null;
+    Future<String>? downloadURLTwo =
+        await validatorImage(operacion.referenciaComprobanteTwo) == true
+            ? operacion.referenciaComprobanteOne.getDownloadURL()
+            : null;
+    Future<String>? downloadURLThree =
+        await validatorImage(operacion.referenciaComprobanteThree) == true
+            ? operacion.referenciaComprobanteOne.getDownloadURL()
+            : null;
     setState(() {
-      Future<String?> downloadURLOne =
-          operacion.referenciaComprobanteOne.getDownloadURL();
-      Future<String?> downloadURLTwo =
-          operacion.referenciaComprobanteTwo.getDownloadURL();
-      Future<String?> downloadURLThree =
-          operacion.referenciaComprobanteThree.getDownloadURL();
-      downloadURLOne.then((urlOne) {
-        comprobanteFileOne = PlatformFile(name: urlOne!, size: 20);
-      }).catchError((error) {});
+      if (downloadURLOne != null) {
+        downloadURLOne.then((urlOne) {
+          comprobanteFileOne = PlatformFile(name: urlOne, size: 20);
+        }).catchError((error) {});
+      }
+      if (downloadURLTwo != null) {
+        downloadURLTwo.then((urlTwo) {
+          comprobanteFileTwo = PlatformFile(name: urlTwo, size: 20);
+        }).catchError((error) {});
+      }
+      if (downloadURLThree != null) {
+        downloadURLThree.then((urlThree) {
+          comprobanteFileThree = PlatformFile(name: urlThree, size: 20);
+        }).catchError((error) {});
+      }
 
-      downloadURLTwo.then((urlTwo) {
-        comprobanteFileTwo = PlatformFile(name: urlTwo!, size: 20);
-      }).catchError((error) {});
-
-      downloadURLThree.then((urlThree) {
-        comprobanteFileThree = PlatformFile(name: urlThree!, size: 20);
-      }).catchError((error) {});
       opreacionId = operacion.id;
       monedaSalienteSelected = operacion.cuentaSaliente.moneda;
       monedaEntranteSelected = operacion.cuentaEntrante.moneda;
@@ -252,6 +273,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
           idOperacion: '1',
           cuentaEntrante: cuentaEntranteSelected,
           cuentaSaliente: null,
+          comisionFija: TextEditingController(text: '0'),
           comision: TextEditingController(text: '0'),
           monto: TextEditingController(text: '0'),
           bono: TextEditingController(text: '0')));
@@ -393,6 +415,12 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
                                 onlyDigits: true),
                             buildField(false, context, 'Porcentaje de comision',
                                 movimiento.comision,
+                                maxLength: 30,
+                                type: TextInputType.number,
+                                suffix: const Text('%'),
+                                onlyDigits: true),
+                            buildField(false, context, 'Comision fija',
+                                movimiento.comisionFija,
                                 maxLength: 30,
                                 type: TextInputType.number,
                                 suffix: const Text('%'),

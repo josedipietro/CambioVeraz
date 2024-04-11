@@ -6,6 +6,7 @@ import 'package:cambio_veraz/models/tasa.dart';
 import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/services/storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Operacion extends ModeloBase {
   Cliente cliente;
@@ -30,15 +31,15 @@ class Operacion extends ModeloBase {
             id: id ?? database.operacionesRef.doc().id,
             ultimaModificacion: ultimaModificacion);
 
-  get referenciaComprobanteOne {
+  Reference get referenciaComprobanteOne {
     return storage.operacionesRef.child('$id-1.png');
   }
 
-  get referenciaComprobanteTwo {
+  Reference get referenciaComprobanteTwo {
     return storage.operacionesRef.child('$id-2.png');
   }
 
-  get referenciaComprobanteThree {
+  Reference get referenciaComprobanteThree {
     return storage.operacionesRef.child('$id-3.png');
   }
 

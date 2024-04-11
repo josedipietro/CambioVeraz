@@ -32,6 +32,7 @@ class IngresosEgresosProvider extends ChangeNotifier {
           comision: '0',
           tasa: operacion.tasa,
           operacion: true,
+          comisionFija: '0',
           bono: '0'));
       for (var movimiento in operacion.movimimentos) {
         resultado.add(IngresoEgresos(
@@ -39,6 +40,7 @@ class IngresosEgresosProvider extends ChangeNotifier {
           tasa: operacion.tasa,
           cuenta: movimiento.cuentaSaliente!,
           monto: double.parse(movimiento.monto.text),
+          comisionFija: movimiento.comisionFija.text,
           comision: movimiento
               .comision.text, // Asumiendo que no hay tasa en movimientos
           operacion: false,
