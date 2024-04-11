@@ -70,7 +70,8 @@ class _Database {
     });
   }
 
-  Stream<Future<List<Operacion>>> getoperacionesStream(String search) {
+  Stream<Future<List<Operacion>>> getoperacionesStream(
+      String search, DateTime dateNow, String id) {
     return operacionesRef
         .orderBy('fecha', descending: true)
         .snapshots()
@@ -78,6 +79,7 @@ class _Database {
       final List<Operacion> operaciones = [];
 
       for (var e in opSnapshot.docs) {
+        final date = e.get('fecha');
         final cliente = await getClienteByReference(e.get('cliente'));
         final cuentaEntrante =
             await getCuentaByReference(e.get('cuentaEntrante'));
@@ -85,17 +87,30 @@ class _Database {
             await getCuentaByReference(e.get('cuentaSaliente'));
 
         if (containsIgnoreCase(cliente.nombre, search)) {
-          operaciones.add(Operacion.fromSnapshot(
+          final actualOperation = Operacion.fromSnapshot(
             snapshot: e,
             cliente: cliente,
             cuentaEntrante: cuentaEntrante,
             cuentaSaliente: cuentaSaliente,
-          ));
+          );
+
+          final date = actualOperation.fecha;
+          if (isSameDayMonthYear(date, dateNow) &&
+                  (actualOperation.cuentaEntrante.id == id) ||
+              id == '') {
+            operaciones.add(actualOperation);
+          }
         }
       }
 
       return operaciones;
     });
+  }
+
+  bool isSameDayMonthYear(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   bool containsIgnoreCase(String haystack, String needle) {
