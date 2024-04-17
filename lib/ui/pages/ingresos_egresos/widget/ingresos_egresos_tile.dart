@@ -80,7 +80,7 @@ class IngresosEgresosTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            '${operacion.cuenta.moneda.simbolo}${calcularDinero(operacion.monto, operacion.comision, operacion.bono)}',
+            '${operacion.cuentaEntrante.moneda.simbolo}${calcularDinero(operacion.monto, operacion.comision, operacion.bono, operacion.comisionFija).toStringAsFixed(2)}',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -90,7 +90,7 @@ class IngresosEgresosTile extends StatelessWidget {
             ),
           ),
           Text(
-            '${operacion.cuenta.moneda.simbolo}1 - ${operacion.tasa.monedaEntrante.simbolo}${operacion.tasa.tasa}',
+            '${operacion.cuentaSaliente.moneda.simbolo}1 - ${operacion.tasa.monedaEntrante.simbolo}${operacion.tasa.tasaEntrante ? operacion.tasa.tasa : 1 / operacion.tasa.tasa}',
             style: const TextStyle(
               fontSize: 12,
             ),
@@ -121,9 +121,11 @@ class IngresosEgresosTile extends StatelessWidget {
     ));
   }
 
-  calcularDinero(double monto, String comision, String bono) {
+  double calcularDinero(
+      double monto, String comision, String bono, String comisionFija) {
     return (monto * (double.parse(comision) ?? 0.0) / 100 +
-        monto -
+        monto +
+        double.parse(comisionFija) -
         double.parse(bono));
   }
 

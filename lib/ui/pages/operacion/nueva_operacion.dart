@@ -79,7 +79,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     final monedasProvider = context.watch<MonedasProvider>();
     final cuentasProvider = context.watch<CuentasProvider>();
     tasas = context.watch<TasasProvider>().tasas;
-
+    monedasProvider.monedas.removeWhere((moneda) => moneda.id == '0');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
@@ -280,7 +280,8 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
     for (var movimiento in movimientos) {
       double monto = double.parse(movimiento.monto.text);
       double comisionPorcentaje = double.parse(movimiento.comision.text) / 100;
-      double comision = monto * comisionPorcentaje;
+      double comision = monto * comisionPorcentaje +
+          double.parse(movimiento.comisionFija.text);
       totalComisiones += comision;
     }
 
@@ -345,9 +346,14 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Tasa'),
+            const Text(
+              'Tasa',
+              style: TextStyle(fontSize: 18),
+            ),
             Text(
-                '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+              '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
           ],
         ),
         const SizedBox(
@@ -356,8 +362,30 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Comision Total'),
-            Text('Comision total $comision')
+            const Text(
+              'Comision Total',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '${monedaEntranteSelected?.simbolo ?? ''} $comision - ${monedaSalienteSelected?.simbolo ?? ''}${formatComisionTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Total',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '${monedaSalienteSelected?.simbolo ?? ''}${formatTotalTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
           ],
         ),
       ],
@@ -366,6 +394,19 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
 
   formatMontoTasa() {
     double conversion = tasaSelected!.tasa * monto;
+    String fixed = conversion.toStringAsFixed(2);
+    return double.parse(fixed);
+  }
+
+  formatComisionTasa() {
+    double conversion = tasaSelected!.tasa * comision;
+    String fixed = conversion.toStringAsFixed(2);
+    return double.parse(fixed);
+  }
+
+  formatTotalTasa() {
+    double conversion =
+        tasaSelected!.tasa * comision + tasaSelected!.tasa * monto;
     String fixed = conversion.toStringAsFixed(2);
     return double.parse(fixed);
   }
@@ -418,10 +459,17 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
           var picked = await FilePicker.platform
               .pickFiles(type: FileType.image, withData: true);
 
-          if (picked != null) {
+          if (picked != null && picked.files.first.size < 5 * 1024 * 1024) {
+            // Check file size
             setState(() {
               onFileSelected(picked.files.first);
             });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('La imagen no puede pesar mas de 5mg'),
+                  backgroundColor: Colors.red),
+            );
           }
         },
         child: comprobanteFileOne != null

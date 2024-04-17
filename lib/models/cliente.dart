@@ -9,7 +9,9 @@ class Cliente extends ModeloBase {
   String apellido;
   String telefono;
   String cedula;
-  bool activo;
+  bool especial;
+  String? observaciones;
+  bool? activo;
 
   Cliente(
       {String? id,
@@ -17,6 +19,8 @@ class Cliente extends ModeloBase {
       required this.nombre,
       required this.apellido,
       required this.cedula,
+      required this.especial,
+      required this.observaciones,
       required this.activo,
       required this.telefono})
       : super(
@@ -37,10 +41,16 @@ class Cliente extends ModeloBase {
   factory Cliente.fromSnapshot(DocumentSnapshot snapshot) {
     return Cliente(
       id: snapshot.id,
-      nombre:  snapshot.get('nombre'),
+      nombre: snapshot.get('nombre'),
       apellido: snapshot.get('apellido'),
       cedula: snapshot.get('cedula'),
       activo: snapshot.get('activo'),
+      observaciones: snapshot.toString().contains('observaciones')
+          ? snapshot.get('observaciones')
+          : 'Ninguna',
+      especial: snapshot.toString().contains('especial')
+          ? snapshot.get('especial')
+          : false,
       telefono: snapshot.get('telefono'),
       ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
           ? snapshot.get('ultimaModificacion').toDate()

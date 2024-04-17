@@ -161,12 +161,16 @@ class _CuentasListPageState extends State<CuentasListPage> {
             future: database.getBalanceCuenta(cuentas[index]),
             initialData: 0.0,
             builder: (context, snapshot) {
-              return CuentaTile(
-                  cuenta: cuentas[index],
-                  onRemove: (model) {
-                    model.delete();
-                  },
-                  balance: snapshot.data ?? 0);
+              if (cuentas[index].id != '0') {
+                return CuentaTile(
+                    cuenta: cuentas[index],
+                    onRemove: (model) {
+                      model.delete();
+                    },
+                    balance: snapshot.data ?? 0);
+              } else {
+                return const SizedBox();
+              }
             });
       },
     ));

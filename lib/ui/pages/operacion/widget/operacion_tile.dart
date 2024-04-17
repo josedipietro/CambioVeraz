@@ -356,12 +356,12 @@ class _OperacionTileState extends State<OperacionTile> {
             : null;
     final referencia2 =
         await validatorImage(operacionRequest.referenciaComprobanteTwo) == true
-            ? operacionRequest.referenciaComprobanteOne.getDownloadURL()
+            ? operacionRequest.referenciaComprobanteTwo.getDownloadURL()
             : null;
     final referencia3 =
         await validatorImage(operacionRequest.referenciaComprobanteThree) ==
                 true
-            ? operacionRequest.referenciaComprobanteOne.getDownloadURL()
+            ? operacionRequest.referenciaComprobanteThree.getDownloadURL()
             : null;
 
     setState(() {

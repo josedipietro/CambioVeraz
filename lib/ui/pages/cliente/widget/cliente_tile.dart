@@ -52,11 +52,17 @@ class ClienteTile extends StatelessWidget {
               ),
             ),
             Text(
+              'Observaciones: ${cliente.observaciones ?? ''}',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+            Text(
               cliente.cedula,
               style: const TextStyle(
                 fontSize: 12,
               ),
-            )
+            ),
           ],
         ),
       ),

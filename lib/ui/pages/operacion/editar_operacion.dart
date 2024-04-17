@@ -173,10 +173,17 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
           var picked = await FilePicker.platform
               .pickFiles(type: FileType.image, withData: true);
 
-          if (picked != null) {
+          if (picked != null && picked.files.first.size < 5 * 1024 * 1024) {
+            // Check file size
             setState(() {
               onFileSelected(picked.files.first);
             });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('La imagen no puede pesar mas de 5mg'),
+                  backgroundColor: Colors.red),
+            );
           }
         },
         child: comprobanteFileOne != null
@@ -286,6 +293,20 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     return double.parse(fixed);
   }
 
+  formatComisionTasa() {
+    double conversion = tasaSelected!.tasa * comision;
+    String fixed = conversion.toStringAsFixed(2);
+    return double.parse(fixed);
+  }
+
+  formatTotalTasa() {
+    double conversion = tasaSelected!.tasa * comision +
+        tasaSelected!.tasa * monto -
+        calcularTotalBonos(movimientos);
+    String fixed = conversion.toStringAsFixed(2);
+    return double.parse(fixed);
+  }
+
   Widget buildOperacionTasaPreview() {
     return Column(
       children: [
@@ -295,9 +316,14 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Tasa'),
+            const Text(
+              'Tasa',
+              style: TextStyle(fontSize: 18),
+            ),
             Text(
-                '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}')
+              '${monedaEntranteSelected?.simbolo ?? ''}$monto - ${monedaSalienteSelected?.simbolo ?? ''}${formatMontoTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
           ],
         ),
         const SizedBox(
@@ -306,8 +332,30 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Comision Total'),
-            Text('Comision total $comision')
+            const Text(
+              'Comision Total',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '${monedaEntranteSelected?.simbolo ?? ''} $comision - ${monedaSalienteSelected?.simbolo ?? ''}${formatComisionTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Total',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '${monedaSalienteSelected?.simbolo ?? ''}${formatTotalTasa()}',
+              style: const TextStyle(fontSize: 18),
+            )
           ],
         ),
       ],
@@ -320,7 +368,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     final monedasProvider = context.watch<MonedasProvider>();
     final cuentasProvider = context.watch<CuentasProvider>();
     tasas = context.watch<TasasProvider>().tasas;
-
+    monedasProvider.monedas.removeWhere((moneda) => moneda.id == '0');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
@@ -540,8 +588,20 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
     for (var movimiento in movimientos) {
       double monto = double.parse(movimiento.monto.text);
       double comisionPorcentaje = double.parse(movimiento.comision.text) / 100;
-      double comision = monto * comisionPorcentaje;
+      double comision = (monto * comisionPorcentaje) +
+          double.parse(movimiento.comisionFija.text);
       totalComisiones += comision;
+    }
+
+    return totalComisiones;
+  }
+
+  double calcularTotalBonos(List<Movimientos> movimientos) {
+    double totalComisiones = 0;
+
+    for (var movimiento in movimientos) {
+      double monto = double.parse(movimiento.bono.text);
+      totalComisiones += monto;
     }
 
     return totalComisiones;

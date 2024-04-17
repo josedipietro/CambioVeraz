@@ -19,7 +19,8 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
   TextEditingController apellidoController = TextEditingController();
   TextEditingController cedulaController = TextEditingController();
   TextEditingController telefonoController = TextEditingController();
-
+  TextEditingController observacionesController = TextEditingController();
+  bool especial = false;
   PlatformFile? cedulaFile;
   PlatformFile? fotoFile;
 
@@ -65,6 +66,21 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
                     maxLength: 30, type: TextInputType.number),
                 buildField(context, 'Telefono', telefonoController,
                     maxLength: 30),
+                buildField(context, 'Observaciones', observacionesController,
+                    maxLength: 30),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: especial,
+                      onChanged: (value) {
+                        setState(() {
+                          especial = value!;
+                        });
+                      },
+                    ),
+                    const Text('Cliente preferencial?'),
+                  ],
+                ),
                 buildUploadFileButton('Subir Cedula', (file) {
                   cedulaFile = file;
                   NotificationsService.showSnackbar(
@@ -145,7 +161,9 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
         activo: true,
         apellido: apellidoController.text,
         cedula: cedulaController.text,
-        telefono: telefonoController.text);
+        telefono: telefonoController.text,
+        especial: false,
+        observaciones: observacionesController.text);
 
     try {
       cliente.referenciaFotoCedula.putData(

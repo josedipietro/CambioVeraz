@@ -24,6 +24,8 @@ class _EditarCientePageState extends State<EditarClientePage> {
   TextEditingController apellidoController = TextEditingController();
   TextEditingController cedulaController = TextEditingController();
   TextEditingController telefonoController = TextEditingController();
+  TextEditingController observacionesController = TextEditingController();
+  bool especial = false;
 
   String fotoCedulaUrl = '';
   String fotoUrl = '';
@@ -46,6 +48,8 @@ class _EditarCientePageState extends State<EditarClientePage> {
     apellidoController.text = cliente.apellido;
     cedulaController.text = cliente.cedula;
     telefonoController.text = cliente.telefono;
+    especial = cliente.especial == null ? false : true;
+    observacionesController.text = cliente.telefono ?? '';
     try {
       final urlFoto = await cliente.referenciaFoto.getDownloadURL();
       final urlFotoCedula = await cliente.referenciaFotoCedula.getDownloadURL();
@@ -111,6 +115,21 @@ class _EditarCientePageState extends State<EditarClientePage> {
                           maxLength: 30, type: TextInputType.number),
                       buildField(context, 'Telefono', telefonoController,
                           maxLength: 30),
+                      buildField(context, 'Observaciones', telefonoController,
+                          maxLength: 30),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: especial,
+                            onChanged: (value) {
+                              setState(() {
+                                especial = value!;
+                              });
+                            },
+                          ),
+                          const Text('Cliente preferencial?'),
+                        ],
+                      ),
                       Center(
                           child: cedulaFile == null
                               ? SizedBox(
@@ -211,6 +230,8 @@ class _EditarCientePageState extends State<EditarClientePage> {
         id: widget.clienteId,
         nombre: nombreController.text,
         activo: true,
+        observaciones: observacionesController.text,
+        especial: false,
         apellido: apellidoController.text,
         cedula: cedulaController.text,
         telefono: telefonoController.text);

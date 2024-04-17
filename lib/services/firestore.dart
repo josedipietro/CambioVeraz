@@ -96,8 +96,7 @@ class _Database {
 
           final date = actualOperation.fecha;
           if (isSameDayMonthYear(date, dateNow) &&
-                  (actualOperation.cuentaEntrante.id == id) ||
-              id == '') {
+              ((actualOperation.cuentaEntrante.id == id) || id == '')) {
             operaciones.add(actualOperation);
           }
         }

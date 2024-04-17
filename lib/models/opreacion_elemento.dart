@@ -2,7 +2,8 @@ import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/tasa.dart';
 
 class IngresoEgresos {
-  Cuenta cuenta;
+  Cuenta cuentaEntrante;
+  Cuenta cuentaSaliente;
   double monto;
   String comision;
   String bono;
@@ -11,8 +12,9 @@ class IngresoEgresos {
   String comisionFija;
 
   IngresoEgresos(
-      {required this.cuenta,
+      {required this.cuentaEntrante,
       required this.monto,
+      required this.cuentaSaliente,
       required this.bono,
       required this.comision,
       required this.operacion,
@@ -21,6 +23,6 @@ class IngresoEgresos {
 
   @override
   String toString() {
-    return cuenta.nombreTitular;
+    return cuentaSaliente.nombreTitular;
   }
 }
