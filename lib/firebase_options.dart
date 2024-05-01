@@ -47,30 +47,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBbJKYiehdLK-TzaM9D1v9W8Jv33kB2E3E',
-    appId: '1:1315016471:web:0ee44f26d910c4ae897152',
-    messagingSenderId: '1315016471',
-    projectId: 'cambioveraz-f9229',
-    authDomain: 'cambioveraz-f9229.firebaseapp.com',
-    storageBucket: 'cambioveraz-f9229.appspot.com',
-    measurementId: 'G-Z9XENPJE57',
-  );
+      apiKey: "AIzaSyDGUWhe5oKf8xzLy7qbhlVxeDv_jsSEdIs",
+      authDomain: "cambio-veraz.firebaseapp.com",
+      projectId: "cambio-veraz",
+      storageBucket: "cambio-veraz.appspot.com",
+      messagingSenderId: "145596211075",
+      appId: "1:145596211075:web:70db1a5284a261083460b6",
+      measurementId: "G-S7PM71NKMT");
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDrzuPeos5AUI1W0caHAI1Vdfuo9164DGs',
-    appId: '1:1315016471:android:43ceee6d50963ff5897152',
-    messagingSenderId: '1315016471',
-    projectId: 'cambioveraz-f9229',
-    storageBucket: 'cambioveraz-f9229.appspot.com',
-  );
+      apiKey: "AIzaSyDGUWhe5oKf8xzLy7qbhlVxeDv_jsSEdIs",
+      authDomain: "cambio-veraz.firebaseapp.com",
+      projectId: "cambio-veraz",
+      storageBucket: "cambio-veraz.appspot.com",
+      messagingSenderId: "145596211075",
+      appId: "1:145596211075:web:70db1a5284a261083460b6",
+      measurementId: "G-S7PM71NKMT");
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB4XYFRizvV2_clTIx8SG76rA1HaTeL1_s',
-    appId: '1:1315016471:ios:57ae40487f4217f1897152',
-    messagingSenderId: '1315016471',
-    projectId: 'cambioveraz-f9229',
-    storageBucket: 'cambioveraz-f9229.appspot.com',
-    iosClientId: '1315016471-8g15if0setfmv3aajk0e8v6nae7f54eh.apps.googleusercontent.com',
-    iosBundleId: 'com.example.cambioVeraz',
-  );
+      apiKey: "AIzaSyDGUWhe5oKf8xzLy7qbhlVxeDv_jsSEdIs",
+      authDomain: "cambio-veraz.firebaseapp.com",
+      projectId: "cambio-veraz",
+      storageBucket: "cambio-veraz.appspot.com",
+      messagingSenderId: "145596211075",
+      appId: "1:145596211075:web:70db1a5284a261083460b6",
+      measurementId: "G-S7PM71NKMT");
 }
