@@ -39,6 +39,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         return 1;
       case Flurorouter.agregarDepositoRoute:
         return 1;
+      case Flurorouter.comisiones:
+        return 1;
       case Flurorouter.cuentasRoute:
         return 1;
       case Flurorouter.agregarCuentaRoute:
@@ -54,6 +56,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       case Flurorouter.agregarUsuarioRoute:
         return 4;
       case Flurorouter.listadoDeEgresosIngresos:
+        return 5;
+      case Flurorouter.reporteDeMovimientos:
         return 5;
       default:
         return 2;

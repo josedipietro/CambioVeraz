@@ -85,6 +85,18 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
                         Icons.account_balance_rounded,
                         size: 32,
                       )),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  IconButton(
+                      tooltip: 'Comisiones',
+                      onPressed: () {
+                        navigateTo(Flurorouter.comisiones);
+                      },
+                      icon: const Icon(
+                        Icons.dangerous,
+                        size: 32,
+                      )),
                 ],
               )
             ],

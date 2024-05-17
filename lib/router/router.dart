@@ -12,6 +12,7 @@ class Flurorouter {
 
   // Pages
   static const String dashboardRoute = '/dashboard';
+  static const String comisiones = '/comisiones';
   static const String clientesRoute = '/clientes';
   static const String agregarClienteRoute = '/clientes/agregar';
   static const String editarClienteRoute = '/clientes/editar/:id';
@@ -37,6 +38,7 @@ class Flurorouter {
   static const String agregarUsuarioRoute = '/usuarios/agregar';
   static const String editarUsuarioRoute = '/usuarios/editar/:id';
   static const String listadoDeEgresosIngresos = '/ingresos';
+  static const String reporteDeMovimientos = '/report/movimientos';
 
   static void configureRoutes() {
     // Auth Routes
@@ -143,6 +145,14 @@ class Flurorouter {
 
     router.define(listadoDeEgresosIngresos,
         handler: PagesHandlers.ingresosEgresos,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(reporteDeMovimientos,
+        handler: PagesHandlers.reporteMovimientos,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(comisiones,
+        handler: PagesHandlers.comisiones,
         transitionType: TransitionType.fadeIn);
     // 404
     router.notFoundHandler = NoPageFoundHandlers.noPageFound;

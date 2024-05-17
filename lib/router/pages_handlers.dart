@@ -4,6 +4,7 @@ import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/ui/pages/cliente/clientes_list.dart';
 import 'package:cambio_veraz/ui/pages/cliente/editar_cliente.dart';
 import 'package:cambio_veraz/ui/pages/cliente/nuevo_cliente.dart';
+import 'package:cambio_veraz/ui/pages/comisiones/comisiones.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/cuentas_list.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/editar_cuenta.dart';
 import 'package:cambio_veraz/ui/pages/cuenta/nueva_cuenta.dart';
@@ -14,6 +15,7 @@ import 'package:cambio_veraz/ui/pages/login/login_page.dart';
 import 'package:cambio_veraz/ui/pages/moneda/editar_moneda.dart';
 import 'package:cambio_veraz/ui/pages/moneda/monedas_list.dart';
 import 'package:cambio_veraz/ui/pages/moneda/nueva_moneda.dart';
+import 'package:cambio_veraz/ui/pages/movimientos%20de%20cuentas/movimientos_de_cuentas.dart';
 import 'package:cambio_veraz/ui/pages/operacion/editar_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/nueva_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/operaciones_list.dart';
@@ -181,6 +183,28 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const IngresosEgresosListPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+  static Handler reporteMovimientos = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.reporteDeMovimientos);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const MovimientosCuentasListPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+  static Handler comisiones = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context.read<PagesProvider>().setCurrentPageUrl(Flurorouter.comisiones);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const ComisionesListPage();
     } else {
       return const LoginPage();
     }

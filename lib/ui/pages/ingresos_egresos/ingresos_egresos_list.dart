@@ -57,24 +57,12 @@ class _IngresosEgresosListPageState extends State<IngresosEgresosListPage> {
               Row(
                 children: [
                   IconButton(
-                      tooltip: 'Depositos',
+                      tooltip: 'Movimiento de cuentas',
                       onPressed: () {
-                        navigateTo(Flurorouter.depositosRoute);
+                        navigateTo(Flurorouter.reporteDeMovimientos);
                       },
                       icon: const Icon(
-                        Icons.collections_bookmark,
-                        size: 32,
-                      )),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  IconButton(
-                      tooltip: 'Cuentas',
-                      onPressed: () {
-                        navigateTo(Flurorouter.cuentasRoute);
-                      },
-                      icon: const Icon(
-                        Icons.account_balance_rounded,
+                        Icons.summarize,
                         size: 32,
                       )),
                 ],

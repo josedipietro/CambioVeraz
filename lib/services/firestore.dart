@@ -174,6 +174,20 @@ class _Database {
     });
   }
 
+  Stream<Future<List<Cuenta>>> get cuentasGroupBy {
+    return cuentasRef.orderBy('nombre').snapshots().map((opSnapshot) async {
+      final List<Cuenta> operaciones = [];
+
+      for (var e in opSnapshot.docs) {
+        final moneda = await getMonedaByReference(e.get('moneda'));
+
+        operaciones.add(Cuenta.fromSnapshot(snapshot: e, moneda: moneda));
+      }
+
+      return operaciones;
+    });
+  }
+
   Stream<Future<List<Cuenta>>> getcuentasFiltradas(String id, String search) {
     return cuentasRef
         .orderBy('nombre')
@@ -192,6 +206,64 @@ class _Database {
 
           return operaciones;
         });
+  }
+
+  Stream<Future<List<Cuenta>>> getcuentasFiltradasGrupBy(
+      String id, String search) {
+    return cuentasRef
+        .orderBy('nombre')
+        .startAt([search.toUpperCase()])
+        .endAt(["$search\uf8ff".toUpperCase()])
+        .snapshots()
+        .map((opSnapshot) async {
+          final List<Cuenta> operaciones = [];
+
+          for (var e in opSnapshot.docs) {
+            final moneda = await getMonedaByReference(e.get('moneda'));
+            if (moneda.id == id || id == '0') {
+              operaciones.add(Cuenta.fromSnapshot(snapshot: e, moneda: moneda));
+            }
+          }
+
+          return operaciones;
+        });
+  }
+
+  Stream<Future<Map<String, List<Cuenta>>>> getcuentasAgrupadasPorId(
+      String id, String search) {
+    return getcuentasFiltradasGrupBy(id, search).map((future) async {
+      Map<String, List<Cuenta>> cuentasAgrupadas = {};
+      List<Cuenta> cuentas = await future;
+
+      // Agrupar las cuentas por ID
+      for (Cuenta cuenta in cuentas) {
+        String key = cuenta.id; // Asume que Cuenta tiene un campo llamado 'id'
+        if (!cuentasAgrupadas.containsKey(key)) {
+          cuentasAgrupadas[key] = [];
+        }
+        cuentasAgrupadas[key]!.add(cuenta);
+      }
+
+      return cuentasAgrupadas;
+    });
+  }
+
+  Stream<Future<Map<String, List<Cuenta>>>> get cuentasAgrupadasPorIdTwo {
+    return cuentasGroupBy.map((future) async {
+      Map<String, List<Cuenta>> cuentasAgrupadas = {};
+      List<Cuenta> cuentas = await future;
+
+      // Agrupar las cuentas por ID
+      for (Cuenta cuenta in cuentas) {
+        String key = cuenta.id; // Asume que Cuenta tiene un campo llamado 'id'
+        if (!cuentasAgrupadas.containsKey(key)) {
+          cuentasAgrupadas[key] = [];
+        }
+        cuentasAgrupadas[key]!.add(cuenta);
+      }
+
+      return cuentasAgrupadas;
+    });
   }
 
   Future<List<Moneda>> get monedas async {
