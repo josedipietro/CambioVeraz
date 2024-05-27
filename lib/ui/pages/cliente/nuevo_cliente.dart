@@ -67,7 +67,7 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
                 buildField(context, 'Telefono', telefonoController,
                     maxLength: 30),
                 buildField(context, 'Observaciones', observacionesController,
-                    maxLength: 30),
+                    maxLength: 400),
                 Row(
                   children: [
                     Checkbox(
@@ -104,6 +104,16 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
         ],
       ),
     );
+  }
+
+  Future<bool> validatorImage(operacionRequest) async {
+    bool test = true;
+    try {
+      var result = await operacionRequest.getMetadata();
+    } catch (error) {
+      test = false;
+    }
+    return test;
   }
 
   Widget buildField(
@@ -166,10 +176,14 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
         observaciones: observacionesController.text);
 
     try {
-      cliente.referenciaFotoCedula.putData(
-          cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
-      cliente.referenciaFoto.putData(
-          fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      if (cedulaFile != null) {
+        cliente.referenciaFotoCedula.putData(
+            cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      }
+      if (fotoFile != null) {
+        cliente.referenciaFoto.putData(
+            fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      }
 
       await cliente.insert();
 
@@ -194,8 +208,8 @@ class _NuevoCientePageState extends State<NuevoClientePage> {
     if (cedulaController.text == '') return false;
     if (telefonoController.text == '') return false;
 
-    if (fotoFile == null) false;
-    if (cedulaFile == null) false;
+    // if (fotoFile == null) false;
+    // if (cedulaFile == null) false;
 
     return true;
   }
