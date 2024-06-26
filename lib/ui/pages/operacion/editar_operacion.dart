@@ -533,7 +533,7 @@ class _EditarOperacionPageState extends State<EditarOperacionPage> {
             height: 60,
             child: OutlinedButton(
               onPressed: tasaSelected != null ? agregar : () {},
-              child: const Text('Editar Operacion'),
+              child: const Text('Editar'),
             ),
           ),
         ],

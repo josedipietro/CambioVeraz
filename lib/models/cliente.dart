@@ -39,21 +39,20 @@ class Cliente extends ModeloBase {
   DocumentReference get ref => database.clientesRef.doc(id);
 
   factory Cliente.fromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
     return Cliente(
       id: snapshot.id,
-      nombre: snapshot.get('nombre'),
-      apellido: snapshot.get('apellido'),
-      cedula: snapshot.get('cedula'),
-      activo: snapshot.get('activo'),
-      observaciones: snapshot.toString().contains('observaciones')
-          ? snapshot.get('observaciones')
-          : 'Ninguna',
-      especial: snapshot.toString().contains('especial')
-          ? snapshot.get('especial')
-          : false,
-      telefono: snapshot.get('telefono'),
-      ultimaModificacion: snapshot.toString().contains('ultimaModificacion')
-          ? snapshot.get('ultimaModificacion').toDate()
+      nombre: data['nombre'],
+      apellido: data['apellido'],
+      cedula: data['cedula'],
+      activo: data['activo'],
+      observaciones:
+          data.containsKey('observaciones') ? data['observaciones'] : 'Ninguna',
+      especial: data.containsKey('especial') ? data['especial'] : false,
+      telefono: data['telefono'],
+      ultimaModificacion: data.containsKey('ultimaModificacion')
+          ? data['ultimaModificacion'].toDate()
           : null,
     );
   }
@@ -66,6 +65,7 @@ class Cliente extends ModeloBase {
       'telefono': telefono,
       'cedula': cedula,
       'activo': activo,
+      'observaciones': observaciones,
       'ultimaModificacion': ultimaModificacion ?? DateTime.now()
     };
   }

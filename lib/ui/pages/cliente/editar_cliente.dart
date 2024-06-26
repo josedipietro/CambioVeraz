@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cambio_veraz/models/cliente.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/firestore.dart';
@@ -27,8 +29,8 @@ class _EditarCientePageState extends State<EditarClientePage> {
   TextEditingController observacionesController = TextEditingController();
   bool especial = false;
 
-  String fotoCedulaUrl = '';
-  String fotoUrl = '';
+  Future<String>? fotoCedulaUrl;
+  Future<String>? fotoUrl;
 
   PlatformFile? cedulaFile;
   PlatformFile? fotoFile;
@@ -43,20 +45,36 @@ class _EditarCientePageState extends State<EditarClientePage> {
 
   inicializarCampos() async {
     final cliente = await database.getClienteById(widget.clienteId);
+    final referencia1 =
+        await validatorImage(cliente.referenciaFotoCedula) == true
+            ? cliente.referenciaFotoCedula.getDownloadURL()
+            : null;
+    final referencia2 = await validatorImage(cliente.referenciaFoto) == true
+        ? cliente.referenciaFoto.getDownloadURL()
+        : null;
 
     nombreController.text = cliente.nombre;
     apellidoController.text = cliente.apellido;
     cedulaController.text = cliente.cedula;
     telefonoController.text = cliente.telefono;
     especial = cliente.especial == null ? false : true;
-    observacionesController.text = cliente.telefono ?? '';
-    try {
-      final urlFoto = await cliente.referenciaFoto.getDownloadURL();
-      final urlFotoCedula = await cliente.referenciaFotoCedula.getDownloadURL();
+    observacionesController.text = cliente.observaciones ?? '';
 
+    try {
       setState(() {
-        fotoUrl = urlFoto;
-        fotoCedulaUrl = urlFotoCedula;
+        if (referencia1 != null) {
+          referencia1.then((urlOne) {
+            cedulaFile = PlatformFile(name: urlOne, size: 20);
+          }).catchError((error) {});
+        }
+        if (referencia2 != null) {
+          referencia2.then((urlTwo) {
+            fotoFile = PlatformFile(name: urlTwo, size: 20);
+          }).catchError((error) {});
+        }
+
+        fotoUrl = referencia2;
+        fotoCedulaUrl = referencia1;
 
         loading = false;
       });
@@ -65,6 +83,16 @@ class _EditarCientePageState extends State<EditarClientePage> {
         loading = false;
       });
     }
+  }
+
+  Future<bool> validatorImage(operacionRequest) async {
+    bool test = true;
+    try {
+      var result = await operacionRequest.getMetadata();
+    } catch (error) {
+      test = false;
+    }
+    return test;
   }
 
   @override
@@ -87,7 +115,7 @@ class _EditarCientePageState extends State<EditarClientePage> {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          NavigationService.replaceTo(Flurorouter.operacionesRoute);
+          NavigationService.replaceTo(Flurorouter.clientesRoute);
         },
       ),
     );
@@ -115,8 +143,9 @@ class _EditarCientePageState extends State<EditarClientePage> {
                           maxLength: 30, type: TextInputType.number),
                       buildField(context, 'Telefono', telefonoController,
                           maxLength: 30),
-                      buildField(context, 'Observaciones', telefonoController,
-                          maxLength: 30),
+                      buildField(
+                          context, 'Observaciones', observacionesController,
+                          maxLength: 400),
                       Row(
                         children: [
                           Checkbox(
@@ -131,30 +160,65 @@ class _EditarCientePageState extends State<EditarClientePage> {
                         ],
                       ),
                       Center(
-                          child: cedulaFile == null
-                              ? SizedBox(
-                                  height: 300,
-                                  child: Image.network(fotoCedulaUrl))
-                              : Text(cedulaFile!.name)),
+                          child: fotoCedulaUrl != null
+                              ? FutureBuilder<String?>(
+                                  future: fotoCedulaUrl,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      return Image.network(
+                                        snapshot.data!,
+                                        width: 200,
+                                        fit: BoxFit
+                                            .fitWidth, // Ajusta el ancho y mantiene el aspecto
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
+                                )
+                              : Text(
+                                  cedulaFile?.name ?? '',
+                                  style: const TextStyle(fontSize: 20),
+                                )),
                       buildUploadFileButton('Subir Cedula', (file) {
                         setState(() {
                           cedulaFile = file;
+                          fotoCedulaUrl = null;
                         });
                         NotificationsService.showSnackbar(
                             'Imagen ${file.name} cargada');
                       }),
                       Center(
-                          child: fotoFile == null
-                              ? SizedBox(
-                                  height: 300, child: Image.network(fotoUrl))
-                              : Text(fotoFile!.name)),
+                        child: fotoUrl != null
+                            ? FutureBuilder<String?>(
+                                future: fotoUrl,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    return Image.network(
+                                      snapshot.data!,
+                                      width: 200,
+                                      fit: BoxFit.fitWidth,
+                                    );
+                                  } else {
+                                    return const CircularProgressIndicator();
+                                  }
+                                },
+                              )
+                            : Text(
+                                fotoFile?.name ?? '',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                      ),
                       buildUploadFileButton('Subir Foto', (file) {
                         setState(() {
                           fotoFile = file;
+                          fotoUrl = null;
                         });
                         NotificationsService.showSnackbar(
                             'Imagen ${file.name} cargada');
-                      })
+                      }),
                     ],
                   ),
                 ),
@@ -168,6 +232,17 @@ class _EditarCientePageState extends State<EditarClientePage> {
               ],
             ),
     );
+  }
+
+  Future<String?> _getImageUrlFromFile(File? file) async {
+    if (file == null) return null;
+
+    final imageId = DateTime.now().millisecondsSinceEpoch.toString();
+    final reference =
+        FirebaseStorage.instance.ref().child('images').child(imageId);
+    await reference.putFile(file);
+
+    return await reference.getDownloadURL();
   }
 
   Widget buildField(
@@ -237,13 +312,13 @@ class _EditarCientePageState extends State<EditarClientePage> {
         telefono: telefonoController.text);
 
     try {
-      if (!isFlutterURL(fotoUrl)) {
-        cliente.referenciaFoto.putData(
-            fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
-      }
-      if (!isFlutterURL(fotoCedulaUrl)) {
+      if (cedulaFile != null && !isFlutterURL(cedulaFile!.name)) {
         cliente.referenciaFotoCedula.putData(
             cedulaFile!.bytes!, SettableMetadata(contentType: 'image/png'));
+      }
+      if (fotoFile != null && !isFlutterURL(fotoFile!.name)) {
+        cliente.referenciaFoto.putData(
+            fotoFile!.bytes!, SettableMetadata(contentType: 'image/png'));
       }
 
       await cliente.update();
