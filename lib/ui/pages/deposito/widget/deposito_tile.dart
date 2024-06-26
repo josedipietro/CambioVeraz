@@ -6,8 +6,8 @@ import 'package:cambio_veraz/services/firestore.dart';
 import 'package:cambio_veraz/ui/shared/confirm_dialog.dart';
 import 'package:cambio_veraz/ui/shared/custom_dropdown.dart';
 import 'package:cambio_veraz/ui/shared/view_dialog.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -28,9 +28,11 @@ class DepositoTile extends StatefulWidget {
 class _DepositoTileState extends State<DepositoTile> {
   final DateFormat format = DateFormat.yMd('es');
   Cuenta? cuentaReceptora;
+  double addMount = 0;
   Deposito? cuentaEntranteSelected;
   TextEditingController montoController = TextEditingController();
   TextEditingController tasaController = TextEditingController();
+  TextEditingController cuentaController = TextEditingController();
   double montoCuentaDebitar = 0;
   @override
   Widget build(BuildContext context) {
@@ -127,6 +129,9 @@ class _DepositoTileState extends State<DepositoTile> {
   void _onAdd(BuildContext context, CuentasProvider cuentasProvider,
       DepositosProvider depositos) async {
     inicializarCampo().then((_) async {
+      bool isMontoEnabled =
+          false; // Variable para controlar el estado de habilitación del campo de monto
+
       final confirm = await showViewDialog(
         context,
         content: StatefulBuilder(
@@ -136,13 +141,8 @@ class _DepositoTileState extends State<DepositoTile> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    CustomDropdown<Cuenta>(
-                      items: cuentasProvider.cuentas,
-                      value: cuentasProvider.cuentas.firstWhereOrNull(
-                          (element) => element.id == cuentaReceptora!.id),
-                      onChange: null,
-                      title: 'Cuenta a fondear',
-                    ),
+                    buildField(context, 'Cuenta a fondear', cuentaController,
+                        maxLength: 300, enabled: false),
                     CustomDropdown<Deposito>(
                       items: depositos.depositos,
                       value: cuentaEntranteSelected,
@@ -150,6 +150,14 @@ class _DepositoTileState extends State<DepositoTile> {
                         setState(() {
                           cuentaEntranteSelected = cuenta;
                           montoCuentaDebitar = cuenta!.monto;
+                          if (cuentaEntranteSelected != null &&
+                              tasaController.text.isNotEmpty) {
+                            isMontoEnabled =
+                                true; // Habilitar el campo de monto si se ha seleccionado una cuenta y una tasa
+                          } else {
+                            isMontoEnabled =
+                                false; // Deshabilitar el campo de monto si no se ha seleccionado una cuenta o una tasa
+                          }
                         });
                       },
                       title: 'Cuenta a debitar',
@@ -157,12 +165,79 @@ class _DepositoTileState extends State<DepositoTile> {
                     const SizedBox(
                       height: 15,
                     ),
-                    buildField(context, 'Monto', montoController,
-                        maxLength: 30),
-                    buildField(context, 'Tasa', tasaController, maxLength: 30),
                     if (cuentaEntranteSelected != null)
                       Text(
                           "Dinero disponible en la cuenta: ${cuentaEntranteSelected!.monto.toString()}${cuentaEntranteSelected!.cuentaReceptora.moneda.simbolo}"),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    buildField(
+                      context,
+                      'Tasa',
+                      tasaController,
+                      maxLength: 30,
+                      suffix:
+                          Text(widget.deposito.cuentaReceptora.moneda.simbolo),
+                      onChanged: (value) {
+                        setState(() {
+                          if (cuentaEntranteSelected != null &&
+                              value.isNotEmpty) {
+                            isMontoEnabled =
+                                true; // Habilitar el campo de monto si se ha seleccionado una cuenta y se ha escrito en el campo de tasa
+                          } else {
+                            isMontoEnabled =
+                                false; // Deshabilitar el campo de monto si no se ha seleccionado una cuenta o no se ha escrito en el campo de tasa
+                          }
+                        });
+                      },
+                    ),
+                    buildField(context, 'Monto', montoController,
+                        maxLength: 30,
+                        suffix: cuentaEntranteSelected == null
+                            ? null
+                            : Text(cuentaEntranteSelected!
+                                .cuentaReceptora.moneda.simbolo),
+                        maxValue: cuentaEntranteSelected != null &&
+                                tasaController.text.isNotEmpty
+                            ? montoCuentaDebitar
+                            : 0, // Establecer el valor máximo según la cuenta y la tasa seleccionadas
+                        enabled:
+                            isMontoEnabled), // Habilitar o deshabilitar el campo de monto según la variable isMontoEnabled
+                    ValueListenableBuilder(
+                      valueListenable: montoController,
+                      builder: (context, value, child) {
+                        if (montoController.value.text.isNotEmpty) {
+                          double monto =
+                              double.parse(montoController.value.text);
+                          return Column(
+                            children: [
+                              Text(
+                                  'Dinero entrante: ${monto * double.parse(tasaController.value.text)}${widget.deposito.cuentaReceptora.moneda.simbolo}'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  'Dinero saliente: $monto${cuentaEntranteSelected!.cuentaReceptora.moneda.simbolo}')
+                            ],
+                          );
+                        } else {
+                          return Container(); // Mostrar un contenedor vacío si el texto es vacío
+                        }
+                      },
+                    ),
+
+                    if (montoController.value.text != '')
+                      Column(
+                        children: [
+                          Text(
+                              'Dinero entrante: ${double.parse(montoController.value.text) * double.parse(tasaController.value.text)}${widget.deposito.cuentaReceptora.moneda.simbolo}'),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                              'Dinero saliente: ${double.parse(montoController.value.text)}${cuentaEntranteSelected!.cuentaReceptora.moneda.simbolo}')
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -172,9 +247,56 @@ class _DepositoTileState extends State<DepositoTile> {
         title: 'Fondeo',
       );
       if (confirm == true) {
-        widget.onRemove(widget.deposito);
+        submit();
+        // final confirmTwo = await showViewDialog(context,
+        //     content: Column(
+        //       children: [
+        //         Text(
+        //             'Dinero entrante: ${double.parse(montoController.value.text) * double.parse(tasaController.value.text)}${widget.deposito.cuentaReceptora.moneda.simbolo}'),
+        //         const SizedBox(
+        //           height: 10,
+        //         ),
+        //         Text(
+        //             'Dinero saliente: ${double.parse(montoController.value.text)}${cuentaEntranteSelected!.cuentaReceptora.moneda.simbolo}')
+        //       ],
+        //     ),
+        //     title: 'Informacion del fondeo');
+        // if (confirmTwo == true) {}
       }
     });
+  }
+
+  submit() {
+    Deposito primerDeposito = Deposito(
+        id: widget.deposito.id,
+        cuentaReceptora: widget.deposito.cuentaReceptora,
+        monto: widget.deposito.monto +
+            double.parse(montoController.value.text) *
+                double.parse(tasaController.value.text),
+        tasa: widget.deposito.tasa,
+        fecha: widget.deposito.fecha);
+
+    Deposito segundoDeposito = Deposito(
+        id: cuentaEntranteSelected!.id,
+        cuentaReceptora: cuentaEntranteSelected!.cuentaReceptora,
+        monto: cuentaEntranteSelected!.monto -
+            double.parse(montoController.value.text),
+        tasa: cuentaEntranteSelected!.tasa,
+        fecha: cuentaEntranteSelected!.fecha);
+
+    try {
+      primerDeposito.update();
+      segundoDeposito.update();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        content: const Text('Fondeo completado'),
+      ));
+    } catch (error) {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Ha ocurrido un error al editar.'),
+      ));
+    }
   }
 
   onCuentaEntranteSelected(Deposito? cuenta) {
@@ -187,26 +309,48 @@ class _DepositoTileState extends State<DepositoTile> {
     final operacionRequest = await database.getArcaById(widget.deposito.id);
     setState(() {
       cuentaReceptora = operacionRequest.cuentaReceptora;
+      cuentaController = TextEditingController(text: cuentaReceptora!.nombre);
     });
   }
 
   Widget buildField(
       BuildContext context, String hintText, TextEditingController controller,
-      {int maxLength = 255, TextInputType? type}) {
+      {int maxLength = 255,
+      Widget? suffix,
+      TextInputType type = const TextInputType.numberWithOptions(decimal: true),
+      bool enabled = true,
+      double maxValue = double.infinity,
+      void Function(String)? onChanged}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 0),
       child: TextField(
         controller: controller,
         maxLength: maxLength,
         enableSuggestions: true,
         keyboardType: type,
+        enabled: enabled,
         decoration: InputDecoration(
           labelText: hintText,
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           border: const OutlineInputBorder(),
           filled: true,
+          suffix: suffix,
           hoverColor: Theme.of(context).hoverColor,
         ),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^(\d+\.?\d*)$')),
+        ],
+        onChanged: (value) {
+          if (onChanged != null) {
+            onChanged(value);
+          }
+          if (value.isNotEmpty) {
+            double currentValue = double.parse(value);
+            if (currentValue > maxValue) {
+              controller.text = maxValue.toStringAsFixed(2);
+            }
+          }
+        },
       ),
     );
   }
