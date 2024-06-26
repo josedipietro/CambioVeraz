@@ -5,24 +5,25 @@ import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/operacion.dart';
 import 'package:cambio_veraz/providers/cuentas_provider.dart';
 import 'package:cambio_veraz/providers/operaciones_provider.dart';
-import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
 import 'package:cambio_veraz/ui/pages/operacion/widget/operacion_tile.dart';
+import 'package:cambio_veraz/ui/pages/perdidas_gananacias/widget/perdidas_ganancias_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class OperacionesListPage extends StatefulWidget {
+class GananciaPerdidaListPage extends StatefulWidget {
   static String route = '/operaciones';
 
-  const OperacionesListPage({super.key});
+  const GananciaPerdidaListPage({super.key});
 
   @override
-  State<OperacionesListPage> createState() => _OperacionesListPageState();
+  State<GananciaPerdidaListPage> createState() =>
+      _GananciaPerdidaListPageState();
 }
 
-class _OperacionesListPageState extends State<OperacionesListPage> {
+class _GananciaPerdidaListPageState extends State<GananciaPerdidaListPage> {
   final TextEditingController buscadorController = TextEditingController();
   final TextEditingController _dateController = TextEditingController(
       text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
@@ -49,63 +50,17 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Operaciones',
+                  'Ganancias y perdidas',
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                 ),
               ),
-              Row(
-                children: [
-                  IconButton(
-                      tooltip: 'Depositos',
-                      onPressed: () {
-                        navigateTo(Flurorouter.depositosRoute);
-                      },
-                      icon: const Icon(
-                        Icons.collections_bookmark,
-                        size: 32,
-                      )),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  IconButton(
-                      tooltip: 'Cuentas',
-                      onPressed: () {
-                        navigateTo(Flurorouter.cuentasRoute);
-                      },
-                      icon: const Icon(
-                        Icons.account_balance_rounded,
-                        size: 32,
-                      )),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  IconButton(
-                      tooltip: 'Comisiones',
-                      onPressed: () {
-                        navigateTo(Flurorouter.comisiones);
-                      },
-                      icon: const Icon(
-                        Icons.dangerous,
-                        size: 32,
-                      )),
-                  IconButton(
-                      tooltip: 'Ganancias y perdidas',
-                      onPressed: () {
-                        navigateTo(Flurorouter.gananciasPerdidas);
-                      },
-                      icon: const Icon(
-                        Icons.currency_exchange,
-                        size: 32,
-                      )),
-                ],
-              )
             ],
           ),
           !cuentasProvider.loading
@@ -246,7 +201,7 @@ class _OperacionesListPageState extends State<OperacionesListPage> {
     return Expanded(
         child: ListView.builder(
       itemCount: operaciones.length,
-      itemBuilder: (context, index) => OperacionTile(
+      itemBuilder: (context, index) => GananciaPerdidaTile(
         operacion: operaciones[index],
         onRemove: (model) {
           model.delete();

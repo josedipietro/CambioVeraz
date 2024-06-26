@@ -28,7 +28,7 @@ class IngresosEgresosProvider extends ChangeNotifier {
     for (var operacion in operaciones) {
       resultado.add(IngresoEgresos(
           cuentaEntrante: operacion.cuentaEntrante,
-          cuentaSaliente: operacion.cuentaEntrante,
+          cuentaSaliente: operacion.cuentaSaliente,
           monto: (operacion.monto * operacion.tasa.tasa),
           comision: '0',
           tasa: operacion.tasa,

@@ -398,6 +398,17 @@ class _Database {
     return usuario;
   }
 
+  Future<Deposito> getArcaById(String id) async {
+    final snapshot = await arcasRef.doc(id).get();
+    final cuentaReceptora =
+        await getCuentaByReference(snapshot.get('cuentaReceptora'));
+
+    final usuario = Deposito.fromSnapshot(
+        snapshot: snapshot, cuentaReceptora: cuentaReceptora);
+
+    return usuario;
+  }
+
   Future<Usuario> getUsuarioByReference(DocumentReference ref) async {
     final snapshot = await usuariosRef.doc(ref.id).get();
     final rol = await getRolByReference(snapshot.get('rol'));

@@ -19,6 +19,7 @@ import 'package:cambio_veraz/ui/pages/movimientos%20de%20cuentas/movimientos_de_
 import 'package:cambio_veraz/ui/pages/operacion/editar_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/nueva_operacion.dart';
 import 'package:cambio_veraz/ui/pages/operacion/operaciones_list.dart';
+import 'package:cambio_veraz/ui/pages/perdidas_gananacias/perdidas_ganancias_list_dart.dart';
 import 'package:cambio_veraz/ui/pages/tasa/editar_tasa.dart';
 import 'package:cambio_veraz/ui/pages/tasa/nueva_tasa.dart';
 import 'package:cambio_veraz/ui/pages/tasa/tasas_list.dart';
@@ -170,6 +171,19 @@ class PagesHandlers {
 
     if (authProvider.authStatus == AuthStatus.authenticated) {
       return const OperacionesListPage();
+    } else {
+      return const LoginPage();
+    }
+  });
+
+  static Handler gananciasPerdidas = Handler(handlerFunc: (context, params) {
+    final authProvider = context!.watch<AuthProvider>();
+    context
+        .read<PagesProvider>()
+        .setCurrentPageUrl(Flurorouter.gananciasPerdidas);
+
+    if (authProvider.authStatus == AuthStatus.authenticated) {
+      return const GananciaPerdidaListPage();
     } else {
       return const LoginPage();
     }

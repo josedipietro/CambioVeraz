@@ -31,6 +31,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         return 0;
       case Flurorouter.agregarMonedaRoute:
         return 0;
+      case Flurorouter.gananciasPerdidas:
+        return 1;
       case Flurorouter.operacionesRoute:
         return 1;
       case Flurorouter.agregarOperacionRoute:

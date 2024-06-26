@@ -39,6 +39,7 @@ class Flurorouter {
   static const String editarUsuarioRoute = '/usuarios/editar/:id';
   static const String listadoDeEgresosIngresos = '/ingresos';
   static const String reporteDeMovimientos = '/report/movimientos';
+  static const String gananciasPerdidas = '/gananciasperdidas';
 
   static void configureRoutes() {
     // Auth Routes
@@ -149,6 +150,10 @@ class Flurorouter {
 
     router.define(reporteDeMovimientos,
         handler: PagesHandlers.reporteMovimientos,
+        transitionType: TransitionType.fadeIn);
+
+    router.define(gananciasPerdidas,
+        handler: PagesHandlers.gananciasPerdidas,
         transitionType: TransitionType.fadeIn);
 
     router.define(comisiones,
