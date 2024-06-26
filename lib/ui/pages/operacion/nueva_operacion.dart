@@ -17,7 +17,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:collection/collection.dart';
 
 class NuevaOperacionPage extends StatefulWidget {
   static String route = '/operacions/nuevaOperacion';
@@ -234,7 +233,7 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
             height: 60,
             child: OutlinedButton(
               onPressed: tasaSelected != null ? agregar : () {},
-              child: const Text('Agregar Operacion'),
+              child: const Text('Continuar'),
             ),
           ),
         ],
@@ -340,6 +339,22 @@ class _NuevaCientePageState extends State<NuevaOperacionPage> {
   Widget buildOperacionTasaPreview() {
     return Column(
       children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Tasa por moneda',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '${monedaEntranteSelected?.simbolo ?? ''} 1 - ${monedaSalienteSelected?.simbolo ?? ''}${tasaSelected?.tasa}',
+              style: const TextStyle(fontSize: 18),
+            )
+          ],
+        ),
         const SizedBox(
           height: 10,
         ),

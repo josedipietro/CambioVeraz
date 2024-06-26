@@ -49,4 +49,6 @@ ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
 
 # Fvm
-.fvm
+
+# FVM Version Cache
+.fvm/

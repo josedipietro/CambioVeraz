@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cambio_veraz/models/code_verification.dart';
 import 'package:cambio_veraz/models/cuenta.dart';
 import 'package:cambio_veraz/models/moneda.dart';
 import 'package:cambio_veraz/models/operacion.dart';
@@ -8,7 +7,6 @@ import 'package:cambio_veraz/providers/cuentas_provider.dart';
 import 'package:cambio_veraz/providers/operaciones_provider.dart';
 import 'package:cambio_veraz/router/router.dart';
 import 'package:cambio_veraz/services/navigation_service.dart';
-import 'package:cambio_veraz/ui/pages/operacion/widget/date_picker.dart';
 import 'package:cambio_veraz/ui/pages/operacion/widget/operacion_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -153,15 +153,13 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
       children: [
         const Text('Tasa'),
         Text(
-            '${monedaEntranteSelected?.simbolo ?? ''}$monto - \$${formatMontoTasa()}')
+            '${monedaEntranteSelected?.simbolo ?? ''}$monto - \$${formatMontoTasa(monto, tasa)}')
       ],
     );
   }
 
-  formatMontoTasa() {
-    double conversion = tasa * monto;
-    String fixed = conversion.toStringAsFixed(2);
-    return double.parse(fixed);
+  formatMontoTasa(double monto, double tasa) {
+    return (monto / tasa);
   }
 
   Widget buildField(
@@ -214,6 +212,10 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
     );
   }
 
+  double calcularValor(int montoBs, double tasa) {
+    return 1 / tasa;
+  }
+
   agregar() async {
     if (!validate()) {
       return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -226,8 +228,7 @@ class _NuevoCientePageState extends State<NuevoDepositoPage> {
         cuentaReceptora: cuentaEntranteSelected!,
         fecha: DateTime.now(),
         monto: double.parse(montoController.text),
-        tasa: tasa);
-
+        tasa: calcularValor(monto.toInt(), tasa));
     try {
       deposito.referenciaComprobante.putData(
           comprobanteFile!.bytes!, SettableMetadata(contentType: 'image/png'));
